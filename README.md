@@ -1,4 +1,4 @@
-## Servlerless Telegram Chat Bot for Groups
+## Serverless Telegram Chat Bot for Groups
 
 ### API Docs
 - https://core.telegram.org/
