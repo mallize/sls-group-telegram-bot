@@ -1,7 +1,7 @@
 import assert from 'chai';
 import event from './resources/event.json';
 import joinevent from './resources/joingroup-event.json';
-import handler from '../src/handler';
+import handler from '../handler';
 import testRepo from './bot-repo.test';
 
 describe('sending command events to handler', () => {

@@ -6,7 +6,7 @@ const path = require('path');
 module.exports = {
     entry: {
         handler: [
-            path.resolve('./handler.js')
+            path.resolve('handler.js')
         ]
     },
     target: 'node',

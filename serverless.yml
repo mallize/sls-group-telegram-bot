@@ -11,8 +11,6 @@ provider:
   environment:
     TELEGRAM_TOKEN: ${ssm:telegram-token~true}
     GROUP_TABLE: "group-bot-groups"
-    PRAYERS_TABLE: "group-bot-prayers"
-    FOOD_TABLE: "group-bot-food"
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -26,7 +24,7 @@ provider:
 
 functions:
   process:
-    handler: src/handler.process
+    handler: handler.process
     events:
       - http:
           path: /
@@ -51,52 +49,6 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
 
-    prayerDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        TableName: ${self:provider.environment.PRAYERS_TABLE}
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: N
-          -
-            AttributeName: chatId
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: chatId
-            KeyType: HASH
-          -
-            AttributeName: id
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
-    foodDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        TableName: ${self:provider.environment.FOOD_TABLE}
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: N
-          -
-            AttributeName: chatId
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: chatId
-            KeyType: HASH
-          -
-            AttributeName: id
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
@@ -114,7 +66,7 @@ custom:
     seed:
       domain:
         sources:
-          - table: ${self:provider.environment.STUDIES_TABLE}
+          - table: ${self:provider.environment.GROUP_TABLE}
             sources: []
         
 
