@@ -1,0 +1,32 @@
+{
+    "chatId": "-11111111",
+    "title": "Life Group",
+    "meeting": {
+        "day": 3,
+        "time" : "6:30 p.m. - 8:30 p.m."
+    },
+    "study": "Chapter 2 of The Blessed Life",
+    "prayers" : [
+        {
+            "id" : 1,
+            "request" : "Jimmy Surgery"
+        },
+        {
+            "id" : 2,
+            "request" : "Anne Surgery"
+        }
+    ],
+    "food" : [
+        {
+            "id" : 1,
+            "name" : "Jenny Smith",
+            "item" : "dessert"
+        },
+        {
+            "id" : 2,
+            "name": "Jill Smith",
+            "item": "steak"
+        }
+    ],
+    "notes" : "Don't forget to bring $15 for your book!"
+} 

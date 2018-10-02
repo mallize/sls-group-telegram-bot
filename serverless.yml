@@ -1,0 +1,121 @@
+service: sls-group-telegram-bot
+
+plugins:
+  - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  environment:
+    TELEGRAM_TOKEN: ${ssm:telegram-token~true}
+    GROUP_TABLE: "group-bot-groups"
+    PRAYERS_TABLE: "group-bot-prayers"
+    FOOD_TABLE: "group-bot-food"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/*"
+
+functions:
+  process:
+    handler: src/handler.process
+    events:
+      - http:
+          path: /
+          method: post
+
+resources:
+  Resources:
+    groupsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.GROUP_TABLE}
+        AttributeDefinitions:
+          -
+            AttributeName: chatId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: chatId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    prayerDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.PRAYERS_TABLE}
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: N
+          -
+            AttributeName: chatId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: chatId
+            KeyType: HASH
+          -
+            AttributeName: id
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    foodDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.FOOD_TABLE}
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: N
+          -
+            AttributeName: chatId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: chatId
+            KeyType: HASH
+          -
+            AttributeName: id
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  serverless-offline:
+    port: 7001
+    skipCacheInvalidation: false
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+      sharedDb: true
+      seed: true
+    seed:
+      domain:
+        sources:
+          - table: ${self:provider.environment.STUDIES_TABLE}
+            sources: []
+        
+
+
