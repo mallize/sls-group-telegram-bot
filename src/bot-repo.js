@@ -36,8 +36,6 @@ module.exports.update = (group) => {
 
         const updatedGroup = DynamoDBUpdateObject(group);
 
-        console.log(`Updated Group update object = ${JSON.stringify(updatedGroup)}`);
-
         const params = {
             TableName: process.env.GROUP_TABLE,
             ...updatedGroup,

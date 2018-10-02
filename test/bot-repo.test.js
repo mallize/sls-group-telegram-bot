@@ -1,7 +1,6 @@
 'use strict';
-const AWS = require('aws-sdk');
 
-const group = require('./resources/group.json');
+import group from './resources/group.json';
 
 module.exports.getGroup = (chatId) => {
     return new Promise((resolve, reject) => {
@@ -16,7 +15,6 @@ module.exports.update = (group) => {
 }
 
 module.exports.create = (group) => {
-    console.log("in test repo create");
     return new Promise((resolve, reject) => {
         resolve("");
     });

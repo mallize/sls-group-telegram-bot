@@ -7,6 +7,7 @@ const commands = `
   /help - describes the bot and the requests it accepts\n
   /next - displays information about the next meeting\n
   /setStudy - sets the study topic
+  /setMeeting - Set the meeting.\n    example: /setMeeting Monday 6:30 p.m.  
   /clearStudy - clear the group study topic\n
   /setNotes - sets group notes
   /clearNotes - clear the group notes\n
@@ -77,7 +78,7 @@ const formatOptional = (value, text) => value ? `\n\n${text} ${value}` : '';
 
 const getNext = (chatId, repo) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
-    .then(group => resolve(`${getNextMeeting(group.meeting)}${formatOptional(group.study, "We will study")}.${formatOptional(group.notes, "Notes:")}`))
+    .then(group => resolve(`${getNextMeeting(group.meeting)}${formatOptional(group.study, "We will study")}${formatOptional(group.notes, "Notes:")}`))
     .catch(error => reject(`Error retrieving the meeting for this chatId: ${chatId}: ${JSON.stringify(error)}`));
   });
 }
@@ -119,8 +120,6 @@ const getPrayers = (chatId, repo) => { return new Promise((resolve, reject) => {
 }
 
 const create = (chatId, title, repo) => { return new Promise((resolve, reject) => {
-  console.log(`creating group for id: ${chatId} title: ${title}`);
-
   repo.create({chatId : chatId, title: title})
     .then(resolve('Group created. Type /help to see a list of commands I support.'))
     .catch(reject(`Unable to create a group for this group chat`));
@@ -151,6 +150,7 @@ const clearStudy = (chatId, repo) => { return new Promise((resolve, reject) => {
 const addPrayer = (chatId, prayer, repo) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
     .then(group => {
+      if(!group.prayers) { group.prayers = []; }
       group.prayers.push({id : getNextId(group.prayers), request : prayer});
       repo.update({chatId : chatId, prayers : group.prayers})
         .then(resolve('Prayer added. Type /prayers to see the full list.'))
@@ -206,9 +206,9 @@ const getFood = (chatId, repo) => { return new Promise((resolve, reject) => {
 const bringFood = (chatId, food, repo, from) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
     .then(group => {
-      const newFood = {id : getNextId(group.food), item : food, name : from};
-      console.log(`*** food added ***\n ${JSON.stringify(newFood)}`);
-      group.food.push(newFood);
+      if(!group.food) { group.food = []; }
+      group.food.push({id : getNextId(group.food), item : food, name : from});
+      
       repo.update({chatId : chatId, food : group.food})
         .then(resolve('Food added. Type /food to see the full list.'))
         .catch(reject(`Unable to add food to list`));
@@ -256,7 +256,7 @@ const setMeeting = (chatId, meeting, repo) => { return new Promise((resolve, rej
 }
 
 const getNextMeeting = (meeting) => {
-  if(!meeting) { return "No meeting time set."; }
+  if(!meeting) { return "No meeting time set, use /setmeeting to set. example: /setMeeting Monday 6 p.m."; }
 
   const { day, time } = meeting;
   const date = new Date();

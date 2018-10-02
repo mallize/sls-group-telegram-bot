@@ -1,0 +1,102 @@
+{
+    "resource": "/",
+    "path": "/",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept-Encoding": "gzip, deflate",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "GB",
+        "Content-Type": "application/json",
+        "Host": "m578e650o8.execute-api.us-east-1.amazonaws.com",
+        "Via": "1.1 1764af62d635a1a6ee51aabc37405452.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Id": "uiZPwpa-9KiEsYRiv_mxyppOwf3PQpzVap3BU30I_CB1kU7536zzYQ==",
+        "X-Amzn-Trace-Id": "Root=1-5ba63bfb-98ffe4985369b5d82b42330c",
+        "X-Forwarded-For": "149.154.167.208, 70.132.4.82",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept-Encoding": [
+            "gzip, deflate"
+        ],
+        "CloudFront-Forwarded-Proto": [
+            "https"
+        ],
+        "CloudFront-Is-Desktop-Viewer": [
+            "true"
+        ],
+        "CloudFront-Is-Mobile-Viewer": [
+            "false"
+        ],
+        "CloudFront-Is-SmartTV-Viewer": [
+            "false"
+        ],
+        "CloudFront-Is-Tablet-Viewer": [
+            "false"
+        ],
+        "CloudFront-Viewer-Country": [
+            "GB"
+        ],
+        "Content-Type": [
+            "application/json"
+        ],
+        "Host": [
+            "m578e650o8.execute-api.us-east-1.amazonaws.com"
+        ],
+        "Via": [
+            "1.1 1764af62d635a1a6ee51aabc37405452.cloudfront.net (CloudFront)"
+        ],
+        "X-Amz-Cf-Id": [
+            "uiZPwpa-9KiEsYRiv_mxyppOwf3PQpzVap3BU30I_CB1kU7536zzYQ=="
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-5ba63bfb-98ffe4985369b5d82b42330c"
+        ],
+        "X-Forwarded-For": [
+            "149.154.167.208, 70.132.4.82"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "h84gln3h08",
+        "resourcePath": "/",
+        "httpMethod": "POST",
+        "extendedRequestId": "Nn5PPHmNoAMF0yw=",
+        "requestTime": "22/Sep/2018:12:56:27 +0000",
+        "path": "/dev",
+        "accountId": "9999999999",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "requestTimeEpoch": 1537620987173,
+        "requestId": "eae6b595-be66-11e8-b0da-f1e7edf94737",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "149.154.167.208",
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": null,
+            "user": null
+        },
+        "apiId": "mm444445"
+    },
+    "body": "{ \"message\" : {\"message_id\":2317,\"from\":{\"id\":2222222,\"is_bot\":false,\"first_name\":\"Matthew\",\"last_name\":\"Clement\",\"username\":\"Mallize\",\"language_code\":\"en-US\"},\"chat\":{\"id\":-1111111,\"title\":\"testbot\",\"type\":\"group\",\"all_members_are_administrators\":true},\"date\":1538432229,\"left_chat_participant\":true} }",
+    "isBase64Encoded": false
+}

@@ -13,8 +13,8 @@ module.exports.process = (event, context, callback, http = axios, token = proces
     return callback(null, { statusCode: 200, body: 'OK' });
   }
   
-  const body = JSON.parse(event.body); //console.log(`body = ${JSON.stringify(body)}`);
-  const message = body.message; console.log(`\n\n***** message: ${JSON.stringify(message)}\n\n`);
+  const body = JSON.parse(event.body);    //console.log(`body = ${JSON.stringify(body)}`);
+  const message = body.message;           //console.log(`\n\n***** message: ${JSON.stringify(message)}\n\n`);
   if(!message) {
     console.error("bad request event");
     return callback(null, { statusCode: 200, body: 'OK' });
@@ -33,25 +33,17 @@ module.exports.process = (event, context, callback, http = axios, token = proces
       .then((success) => callback(null, { statusCode: 200, body: 'OK' }))
       .catch((error) => {
         console.error(`error sending message: ${error}`);
-        callback(null, { statusCode: 200, body: 'OK' });
+        return callback(null, { statusCode: 200, body: 'OK' });
       });
   };
 
   try {
-    if(message.new_chat_member) {
-      if(message.new_chat_member.username === "LifeGroup_Bot") {
-        message.text = `/create ${message.chat.title}`;
-      } else {
-        callback(null, { statusCode: 200, body: 'OK' });
-      }
-    } 
-
-    if(message.group_chat_created) {
+    if(isNewGroupEvent(message)) {
       message.text = `/create ${message.chat.title}`;
     }
 
     if(!message.text) {
-      callback(null, { statusCode: 200, body: 'OK' }); //event we don't care about
+      return callback(null, { statusCode: 200, body: 'OK' }); //event we don't care about
     }
 
     bot.handle({chatId : chatId, command : message.text, from : `${message.from.first_name} ${message.from.last_name}`}, repo)
@@ -62,9 +54,10 @@ module.exports.process = (event, context, callback, http = axios, token = proces
       });
   } catch(err) {
     console.error(`an unexpected error occured ${err}`);
-    callback(null, { statusCode: 200, body: 'OK' });
+    return callback(null, { statusCode: 200, body: 'OK' });
   }
-
 };
 
-
+const isNewGroupEvent = (message) => {
+  return ((message.new_chat_member && message.new_chat_member.username === "LifeGroup_Bot") || (message.group_chat_created)) ? true : false;
+} 
