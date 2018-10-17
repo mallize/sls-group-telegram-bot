@@ -9,7 +9,7 @@ provider:
   name: aws
   runtime: nodejs8.10
   environment:
-    TELEGRAM_TOKEN: ${ssm:telegram-token~true}
+    TELEGRAM_TOKEN: ${ssm:telegram-token~true} 
     GROUP_TABLE: "group-bot-groups"
   iamRoleStatements:
     - Effect: Allow
@@ -24,7 +24,7 @@ provider:
 
 functions:
   process:
-    handler: handler.process
+    handler: src/handler.process
     events:
       - http:
           path: /

@@ -1,8 +1,8 @@
 'use strict';
 
 import axios from 'axios';
-import bot from './src/bot';
-import botRepo from './src/bot-repo';
+import bot from './bot';
+import botRepo from './bot-repo';
 
 module.exports.process = (event, context, callback, http = axios, token = process.env.TELEGRAM_TOKEN, repo = botRepo) => {
   //console.log(`Received event ${JSON.stringify(event)}`);

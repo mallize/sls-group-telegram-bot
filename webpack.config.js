@@ -4,11 +4,7 @@ const path = require('path');
 
 
 module.exports = {
-    entry: {
-        handler: [
-            path.resolve('handler.js')
-        ]
-    },
+    entry: slsw.lib.entries,
     target: 'node',
     mode: 'production',
     optimization: {

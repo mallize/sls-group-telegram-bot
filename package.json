@@ -15,10 +15,6 @@
     "source-map-support": "0.5.6"
   },
   "devDependencies": {
-    "mocha": "^5.2.0",
-    "mocha-webpack": "1.1.0",
-    "chai": "4.1.2",
-    "serverless": "^1.7.0",
     "aws-sdk": "2.165.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.5",
@@ -29,12 +25,16 @@
     "babel-preset-stage-0": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.26.0",
+    "chai": "4.1.2",
     "child_process": "^1.0.2",
     "dynamodb-local": "0.0.22",
+    "mocha": "^5.2.0",
+    "mocha-webpack": "1.1.0",
+    "serverless": "^1.7.0",
     "serverless-dynamodb-local": "^0.2.30",
-    "serverless-offline": "^3.25.4",
+    "serverless-offline": "^3.27.0",
     "serverless-webpack": "^5.1.5",
-    "webpack": "^4.12.1",
+    "webpack": "^4.21.0",
     "webpack-node-externals": "^1.7.2"
   }
 }
