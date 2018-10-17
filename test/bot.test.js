@@ -1,7 +1,6 @@
 import chai from 'chai';
 import bot from '../src/bot';
 import botTestRepo from './bot-repo.test';
-import group from './resources/group.json';
 
 chai.config.includeStack = true;
 

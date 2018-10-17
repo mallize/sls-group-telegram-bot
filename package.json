@@ -6,6 +6,7 @@
   "scripts": {
     "start": "rm -rf .serverless/ && ./node_modules/.bin/serverless offline start",
     "test": "mocha --recursive -d --require babel-core/register --timeout 60000 --exit",
+    "debug": "mocha --recursive -d --require babel-core/register --debug-brk",
     "deploy": "./node_modules/.bin/serverless deploy"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "mocha": "^5.2.0",
+    "mocha-webpack": "1.1.0",
     "chai": "4.1.2",
     "serverless": "^1.7.0",
     "aws-sdk": "2.165.0",

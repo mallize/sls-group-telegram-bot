@@ -2,25 +2,6 @@
 
 import botRepo from './bot-repo';
 
-const commands = `
-  /about - describes the bot and the requests it accepts\n
-  /help - describes the bot and the requests it accepts\n
-  /next - displays information about the next meeting\n
-  /setStudy - sets the study topic
-  /setMeeting - Set the meeting.\n    example: /setMeeting Monday 6:30 p.m.  
-  /clearStudy - clear the group study topic\n
-  /setNotes - sets group notes
-  /clearNotes - clear the group notes\n
-  /prayers - displays the prayer requests from the last meeting.
-  /addPrayer - add a prayer to the prayer list\n    example: /addPrayer Matt's mom has been sick
-  /removePrayer - remove a prayer from the prayer list\n    example: /removePrayer 1
-  /clearPrayers - clears the prayer list\n
-  /food - displays a list of food people have offered to bring
-  /bringFood - offer to bring something\n    example: /bringFood pizza
-  /removeFood - remove an item from the food list\n    example: /removeFood 2
-  /clearFood - clear the food list
-  `;
-
 const generalMessage = `I am a bot designed by Matt Clement to help keep track of group meetings and activities.\n\nI support the following requests:\n${commands}`;
 
 module.exports.handle = (request, repo = botRepo) => {
@@ -174,10 +155,9 @@ const removePrayer = (chatId, prayerId, repo) => { return new Promise((resolve, 
 }
 
 const removeFromList = (list, listId) => {
-  let seq = 1;
   return list
     .filter(item => item.id != listId)
-    .map(item => { return { ...item, id : seq++ } });
+    .map((item, index) => ({ ...item, id : index + 1 }));
 }
 
 const getNextId = (list) => {
@@ -266,6 +246,25 @@ const getNextMeeting = (meeting) => {
 
   return `Our next meeting is ${days[day]} ${resultDate.getMonth() + 1}-${resultDate.getDate()}-${resultDate.getFullYear()}, ${time}`;
 }
+
+const commands = `
+  /about - describes the bot and the requests it accepts\n
+  /help - describes the bot and the requests it accepts\n
+  /next - displays information about the next meeting\n
+  /setStudy - sets the study topic
+  /setMeeting - Set the meeting.\n    example: /setMeeting Monday 6:30 p.m.  
+  /clearStudy - clear the group study topic\n
+  /setNotes - sets group notes
+  /clearNotes - clear the group notes\n
+  /prayers - displays the prayer requests from the last meeting.
+  /addPrayer - add a prayer to the prayer list\n    example: /addPrayer Matt's mom has been sick
+  /removePrayer - remove a prayer from the prayer list\n    example: /removePrayer 1
+  /clearPrayers - clears the prayer list\n
+  /food - displays a list of food people have offered to bring
+  /bringFood - offer to bring something\n    example: /bringFood pizza
+  /removeFood - remove an item from the food list\n    example: /removeFood 2
+  /clearFood - clear the food list
+  `;
 
 
 
