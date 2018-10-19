@@ -21,6 +21,14 @@ describe('sending commands to bot', () => {
         return `${days[day]} ${resultDate.getMonth() + 1}-${resultDate.getDate()}-${resultDate.getFullYear()}, ${time}`;
     }
 
+    it('should list help with /help or /about', (done) => {
+        bot.handle({chatId : "-11111111111", command : "/about", from : "Matt"}, botTestRepo)
+            .then(response => {
+                console.log(`commands = ${response.message}`);
+                done();
+            });
+    });
+
     it('should handle /next', (done) => {
 
         const expected = `Our next meeting is ${getNextMeeting()}\n\nWe will study Chapter 2 of The Blessed Life\n\nNotes: Don't forget to bring $15 for your book!`;

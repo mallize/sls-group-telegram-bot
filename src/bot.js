@@ -2,57 +2,24 @@
 
 import botRepo from './bot-repo';
 
-const generalMessage = `I am a bot designed by Matt Clement to help keep track of group meetings and activities.\n\nI support the following requests:\n${commands}`;
-
 module.exports.handle = (request, repo = botRepo) => {
   return new Promise((resolve, reject) => {
 
     const argIndex = request.command.indexOf(" ");
     const command = (argIndex == -1) ? request.command : request.command.slice(0, argIndex); 
-    const args = (argIndex == -1) ? undefined : request.command.slice(argIndex + 1, request.command.length); 
-    
-    const params = {chatId : request.chatId, repo : repo, resolve : resolve, reject : reject, args : args, from : request.from};
+    const args = (argIndex == -1) ? undefined : request.command.slice(argIndex + 1, request.command.length);
 
-    switch (command.toLowerCase()) {
-      case "/help": resolve({message : generalMessage}); break;
+    const commandItem = commands.find(cmd => cmd.command === command.toLowerCase());
 
-      case "/about": resolve({message : generalMessage}); break;
-
-      case "/next": handleRequest(getNext, params); break;
-
-      case "/create": handleRequest(create, params); break;
-
-      case "/setmeeting" : handleRequest(setMeeting, params); break;
-
-      case "/setstudy": handleRequest(setStudy, params); break;
-      case "/clearstudy": handleRequest(clearStudy, params); break;  
-      
-      case "/setnotes": handleRequest(setNotes, params); break;
-      case "/clearnotes": handleRequest(clearNotes, params); break; 
-
-      case "/prayers": handleRequest(getPrayers, params); break;
-      case "/addprayer": handleRequest(addPrayer, params); break;
-      case "/removeprayer": handleRequest(removePrayer, params); break;
-      case "/clearprayers": handleRequest(clearPrayers, params); break;
-        
-      case "/food": handleRequest(getFood, params); break;
-      case "/bringfood": handleRequest(bringFood, params); break;
-      case "/removefood": handleRequest(removeFood, params); break;
-      case "/clearfood": handleRequest(clearFood, params); break; 
-
-      default: resolve({message : 'I do not support the command you sent me.'}); break;
-
+    if(commandItem) { 
+      commandItem.fn(request.chatId, repo, args, request.from)
+        .then(msg => resolve({message : msg}))
+        .catch(err => reject({error : err}));
+    } else {
+      resolve({message : 'I do not support the request you sent me.'});
     }
+  
   });
-}
-
-const handleRequest = (fn, params) => {
-  const {chatId, repo, resolve, reject, args, from} = params;
-  const promiseResult = args ? fn(chatId, args, repo, from) : fn(chatId, repo, from)
-
-  promiseResult
-    .then(msg => resolve({message : msg}))
-    .catch(err => reject({error : err}));
 }
 
 const formatOptional = (value, text) => value ? `\n\n${text} ${value}` : '';
@@ -64,25 +31,19 @@ const getNext = (chatId, repo) => { return new Promise((resolve, reject) => {
   });
 }
 
-const setStudy = (chatId, study, repo) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
-      repo.update({chatId : chatId, study : study})
-        .then(resolve('Study updated. Type /next to see the group meeting time, study and notes.'))
-        .catch(reject(`Unable to update the study`));
-    })
+const getHelp = () => Promise.resolve(generalMessage);
+
+const setStudy = (chatId, repo, study) => { return new Promise((resolve, reject) => {
+  repo.update({chatId : chatId, study : study})
+    .then(resolve('Study updated. Type /next to see the group meeting time, study and notes.'))
     .catch(error => reject(`Error updating the study for this chatId: ${chatId}: ${JSON.stringify(error)}`));
   });
 }
 
-const setNotes = (chatId, notes, repo) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
-      repo.update({chatId : chatId, notes : notes})
-        .then(resolve('Notes updated. Type /next to see the group meeting time, study and notes.'))
-        .catch(reject(`Unable to update the study`));
-    })
-    .catch(error => reject(`Error updating the study for this chatId: ${chatId}: ${JSON.stringify(error)}`));
+const setNotes = (chatId, repo, notes) => { return new Promise((resolve, reject) => {
+    repo.update({chatId : chatId, notes : notes})
+      .then(resolve('Notes updated. Type /next to see the group meeting time, study and notes.'))
+      .catch(error => reject(`Error updating the study for this chatId: ${chatId}: ${JSON.stringify(error)}`));    
   });
 }
 
@@ -100,7 +61,7 @@ const getPrayers = (chatId, repo) => { return new Promise((resolve, reject) => {
   });
 }
 
-const create = (chatId, title, repo) => { return new Promise((resolve, reject) => {
+const create = (chatId, repo, title) => { return new Promise((resolve, reject) => {
   repo.create({chatId : chatId, title: title})
     .then(resolve('Group created. Type /help to see a list of commands I support.'))
     .catch(reject(`Unable to create a group for this group chat`));
@@ -128,7 +89,7 @@ const clearStudy = (chatId, repo) => { return new Promise((resolve, reject) => {
   });
 }
 
-const addPrayer = (chatId, prayer, repo) => { return new Promise((resolve, reject) => {
+const addPrayer = (chatId, repo, prayer) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
     .then(group => {
       if(!group.prayers) { group.prayers = []; }
@@ -141,7 +102,7 @@ const addPrayer = (chatId, prayer, repo) => { return new Promise((resolve, rejec
   });
 }
 
-const removePrayer = (chatId, prayerId, repo) => { return new Promise((resolve, reject) => {
+const removePrayer = (chatId, repo, prayerId) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
     .then(group => {
       const newList = removeFromList(group.prayers, parseInt(prayerId, 10));
@@ -183,7 +144,7 @@ const getFood = (chatId, repo) => { return new Promise((resolve, reject) => {
   });
 }
 
-const bringFood = (chatId, food, repo, from) => { return new Promise((resolve, reject) => {
+const bringFood = (chatId, repo, food, from) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
     .then(group => {
       if(!group.food) { group.food = []; }
@@ -197,7 +158,7 @@ const bringFood = (chatId, food, repo, from) => { return new Promise((resolve, r
   });
 }
 
-const removeFood = (chatId, foodId, repo) => { return new Promise((resolve, reject) => {
+const removeFood = (chatId, repo, foodId) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
     .then(group => {
       const newList = removeFromList(group.food, parseInt(foodId, 10));
@@ -219,18 +180,14 @@ const clearFood = (chatId, repo) => { return new Promise((resolve, reject) => {
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-const setMeeting = (chatId, meeting, repo) => { return new Promise((resolve, reject) => {
+const setMeeting = (chatId, repo, meeting) => { return new Promise((resolve, reject) => {
   const splitCommand = meeting.split(" ");
   const weekDay = splitCommand[0];
   const time = splitCommand[1];
   const day = days.indexOf(weekDay);
 
-  repo.getGroup(chatId)
-    .then(group => {
-      repo.update({chatId : chatId, meeting : {day : day, time : time}})
-        .then(resolve('Meeting set. Type /next to see the group meeting time, study and notes.'))
-        .catch(reject(`Unable to set meeting`));
-    })
+  repo.update({chatId : chatId, meeting : {day : day, time : time}})
+    .then(resolve('Meeting set. Type /next to see the group meeting time, study and notes.'))
     .catch(error => reject(`Error setting the meeting for this chatId: ${chatId}: ${JSON.stringify(error)}`));
   });
 }
@@ -247,24 +204,32 @@ const getNextMeeting = (meeting) => {
   return `Our next meeting is ${days[day]} ${resultDate.getMonth() + 1}-${resultDate.getDate()}-${resultDate.getFullYear()}, ${time}`;
 }
 
-const commands = `
-  /about - describes the bot and the requests it accepts\n
-  /help - describes the bot and the requests it accepts\n
-  /next - displays information about the next meeting\n
-  /setStudy - sets the study topic
-  /setMeeting - Set the meeting.\n    example: /setMeeting Monday 6:30 p.m.  
-  /clearStudy - clear the group study topic\n
-  /setNotes - sets group notes
-  /clearNotes - clear the group notes\n
-  /prayers - displays the prayer requests from the last meeting.
-  /addPrayer - add a prayer to the prayer list\n    example: /addPrayer Matt's mom has been sick
-  /removePrayer - remove a prayer from the prayer list\n    example: /removePrayer 1
-  /clearPrayers - clears the prayer list\n
-  /food - displays a list of food people have offered to bring
-  /bringFood - offer to bring something\n    example: /bringFood pizza
-  /removeFood - remove an item from the food list\n    example: /removeFood 2
-  /clearFood - clear the food list
-  `;
+const commands = [
+  {command : '/about', fn : getHelp, description : 'describes this bot and the requests it accepts'},
+  {command : '/help', fn : getNext, description : 'describes this bot and the requests it accepts'},
+  {command : '/next', fn : getNext, description : 'displays information about the next meeting'},
+  {command : '/setstudy', fn : setStudy, description : 'sets the study topic', usage : '/setStudy Romans 13'},
+  {command : '/setmeeting', fn : setMeeting, description : 'sets the meeting.', usage : '/setMeeting Monday 6:30 p.m.'},
+  {command : '/clearstudy', fn : clearStudy, description : 'clear the study topic'},
+  {command : '/setnotes', fn : setNotes, description : 'sets group notes', usage : '/setNotes Remember to bring $5 for your book'},
+  {command : '/clearnotes', fn : clearNotes, description : 'clear the group notes'},
+  {command : '/prayers', fn : getPrayers, description : 'displays current prayer requests'},
+  {command : '/addprayer', fn : addPrayer, description : 'add a prayer to the prayer list', usage : '/addPrayer Matt is having back surgery'},
+  {command : '/removeprayer', fn : removePrayer, description : 'removes a prayer from the prayer list', usage : '/removePrayer 3'},
+  {command : '/clearprayers', fn : clearPrayers, description : 'removes all prayers from the prayer list'},
+  {command : '/food', fn : getFood, description : 'displays list of food people have offered to bring'},
+  {command : '/bringfood', fn : bringFood, description : 'offer to bring food to the next group meeting', usage : '/bringFood pizza'},
+  {command : '/removefood', fn : removeFood, description : 'removes an item from the food list', usage : '/removeFood 3'},
+  {command : '/clearfood', fn : clearFood, description : 'removes all items from the food list'},
+  {command : '/create', fn : create, description : 'sets up a new group'}
+];
+
+const getCommands = () => {
+  return commands.map(cmd => ` ${cmd.command} - ${cmd.description}\n${(cmd.usage) ? '    example: ' + cmd.usage + '\n' : ''}`).join('');
+}
+
+const generalMessage = `I am a bot designed by Matt Clement to help keep track of group meetings and activities.\n\nI support the following requests:\n${getCommands()}`;
+
 
 
 
