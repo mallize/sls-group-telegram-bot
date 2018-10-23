@@ -70,22 +70,22 @@ const create = (chatId, repo, title) => { return new Promise((resolve, reject) =
 
 const clearPrayers = (chatId, repo) => { return new Promise((resolve, reject) => {
   repo.update({chatId : chatId, prayers : []})
-      .then(resolve('Prayer list cleared.'))
-      .catch(reject(`Unable to clear prayer list`));
+    .then(resolve('Prayer list cleared.'))
+    .catch(reject(`Unable to clear prayer list`));
   });
 }
 
 const clearNotes = (chatId, repo) => { return new Promise((resolve, reject) => {
   repo.update({chatId : chatId, notes : null})
-      .then(resolve('Notes cleared.'))
-      .catch(reject(`Unable to clear notes`));
+    .then(resolve('Notes cleared.'))
+    .catch(reject(`Unable to clear notes`));
   });
 }
 
 const clearStudy = (chatId, repo) => { return new Promise((resolve, reject) => {
   repo.update({chatId : chatId, study : null})
-      .then(resolve('Study cleared.'))
-      .catch(reject(`Unable to clear study`));
+    .then(resolve('Study cleared.'))
+    .catch(reject(`Unable to clear study`));
   });
 }
 
@@ -121,14 +121,14 @@ const removeFromList = (list, listId) => {
     .map((item, index) => ({ ...item, id : index + 1 }));
 }
 
-const getNextId = (list) => {
-  if(!Array.isArray(list) || !list.length) {
-    return 1;
-  } else {
-    const ids = list.map(x => x.id);
-    return Math.max( ...ids ) + 1;
-  }
+const isEmptyArray = (list) => (!Array.isArray(list) || !list.length);
+
+const nextId = (list) => {
+  const ids = list.map(x => x.id);
+  return Math.max( ...ids ) + 1;
 }
+
+const getNextId = (list) => isEmptyArray(list) ? 1 : nextId(list);
 
 const getFood = (chatId, repo) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
@@ -206,7 +206,7 @@ const getNextMeeting = (meeting) => {
 
 const commands = [
   {command : '/about', fn : getHelp, description : 'describes this bot and the requests it accepts'},
-  {command : '/help', fn : getNext, description : 'describes this bot and the requests it accepts'},
+  {command : '/help', fn : getHelp, description : 'describes this bot and the requests it accepts'},
   {command : '/next', fn : getNext, description : 'displays information about the next meeting'},
   {command : '/setstudy', fn : setStudy, description : 'sets the study topic', usage : '/setStudy Romans 13'},
   {command : '/setmeeting', fn : setMeeting, description : 'sets the meeting.', usage : '/setMeeting Monday 6:30 p.m.'},
