@@ -83,6 +83,18 @@ describe('sending commands to bot', () => {
             });
     });
 
+    it('should handle /add prayer', (done) => {  
+        bot.handle({chatId : "-11111111111", command : "/add prayer This is a test prayer"}, botTestRepo)
+            .then(response => {
+                chai.expect(response.message).to.deep.equal("Prayer added. Type /prayers to see the full list.");
+                done();
+            })
+            .catch((error) => {
+                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
+                done(error);
+            });
+    });
+
     it('should handle /addPrayer when prayers do not exist', (done) => {  
         const repo = {
             getGroup : (chatId) => {
@@ -101,7 +113,7 @@ describe('sending commands to bot', () => {
             }
         }
 
-        bot.handle({chatId : "-11111111111", command : "/addPrayer This is a test prayer"}, repo)
+        bot.handle({chatId : "-11111111111", command : "/addPrayer This is a test prayer"}, repo, "Joe Smith")
             .then(response => {
                 chai.expect(response.message).to.deep.equal("Prayer added. Type /prayers to see the full list.");
                 done();
@@ -115,7 +127,7 @@ describe('sending commands to bot', () => {
     it('should handle /removePrayer', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/removePrayer 2"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Prayer removed. Type /prayers to see the full list.");
+                chai.assert(response.message.startsWith("*Prayer removed.", "did not start with expected"));
                 done();
             })
             .catch((error) => {

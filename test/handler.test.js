@@ -13,7 +13,7 @@ describe('sending command events to handler', () => {
         const expected = 'Our next meeting is Wednesday 9-26-2018, 6:30 p.m. - 8:30 p.m.\n\nWe will study Chapter 1 of The Blessed Life.\n\nDon\'t forget to bring $15 for your book!';
 
         const mockHttp = {
-            post(url, response) { console.log(`response = ${JSON.stringify(response)}`);
+            post(url, response) {
                 return new Promise((resolve) => {
                     resolve({'success': 'it worked'});
                 });
@@ -41,7 +41,7 @@ describe('sending command events to handler', () => {
         const event = joinevent;
 
         const mockHttp = {
-            post(url, response) { console.log(`response = ${JSON.stringify(response)}`);
+            post(url, response) { 
                 return new Promise((resolve) => {
                     resolve({'success': 'it worked'});
                 });
@@ -69,7 +69,7 @@ describe('sending command events to handler', () => {
         const event = ignoreevent;
 
         const mockHttp = {
-            post(url, response) { console.log(`response = ${JSON.stringify(response)}`);
+            post(url, response) { 
                 return new Promise((resolve) => {
                     resolve({'success': 'it worked'});
                 });

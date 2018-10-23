@@ -5,21 +5,28 @@ import botRepo from './bot-repo';
 module.exports.handle = (request, repo = botRepo) => {
   return new Promise((resolve, reject) => {
 
-    const argIndex = request.command.indexOf(" ");
-    const command = (argIndex == -1) ? request.command : request.command.slice(0, argIndex); 
-    const args = (argIndex == -1) ? undefined : request.command.slice(argIndex + 1, request.command.length);
+    const {commandItem, args} = findCommandItem(request.command);
 
-    const commandItem = commands.find(cmd => cmd.command === command.toLowerCase());
-
-    if(commandItem) { 
+    if(commandItem) {
       commandItem.fn(request.chatId, repo, args, request.from)
         .then(msg => resolve({message : msg}))
         .catch(err => reject({error : err}));
     } else {
       resolve({message : 'I do not support the request you sent me.'});
     }
-  
+
   });
+}
+
+const findCommandItem = (request, stop = false) => {
+  const argIndex = request.indexOf(" ");
+  const command = (argIndex == -1) ? request : request.slice(0, argIndex); 
+  const args = (argIndex == -1) ? undefined : request.slice(argIndex + 1, request.length);
+
+  const commandItem = commands.find(cmd => cmd.command === command.toLowerCase());
+  return (commandItem) 
+    ? {commandItem: commandItem, args: args}
+    : stop ? undefined : findCommandItem(request.replace(' ', ''), true); //check for auto correct version (i.e. /set meeting)
 }
 
 const formatOptional = (value, text) => value ? `\n\n${text} ${value}` : '';
@@ -44,20 +51,6 @@ const setNotes = (chatId, repo, notes) => { return new Promise((resolve, reject)
     repo.update({chatId : chatId, notes : notes})
       .then(resolve('Notes updated. Type /next to see the group meeting time, study and notes.'))
       .catch(error => reject(`Error updating the study for this chatId: ${chatId}: ${JSON.stringify(error)}`));    
-  });
-}
-
-const getPrayers = (chatId, repo) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
-      const prayers = group.prayers;
-      if(!Array.isArray(prayers) || !prayers.length) {
-        resolve('There are currently no prayer reqeusts. Type /addPrayer followed by your request to add a prayer to the list.');
-      } else {
-        resolve(`*Current Prayer Requests*\n${group.prayers.map(prayer => `${prayer.id} - ${prayer.request}\n`).join('')}`);
-      }
-    })
-    .catch(error => reject(`Error retrieving the prayers for this chatId: ${chatId}: ${JSON.stringify(error)}`));
   });
 }
 
@@ -89,11 +82,27 @@ const clearStudy = (chatId, repo) => { return new Promise((resolve, reject) => {
   });
 }
 
-const addPrayer = (chatId, repo, prayer) => { return new Promise((resolve, reject) => {
+const formatPrayers = (prayers) => `*Current Prayer Requests*\n${prayers.map(prayer => `${prayer.id} - ${prayer.request}\n`).join('')}`;
+
+const getPrayers = (chatId, repo) => { return new Promise((resolve, reject) => {
+  repo.getGroup(chatId)
+    .then(group => {
+      const prayers = group.prayers;
+      if(!Array.isArray(prayers) || !prayers.length) {
+        resolve('There are currently no prayer reqeusts. Type /addPrayer followed by your request to add a prayer to the list.');
+      } else {
+        resolve(formatPrayers(prayers));
+      }
+    })
+    .catch(error => reject(`Error retrieving the prayers for this chatId: ${chatId}: ${JSON.stringify(error)}`));
+  });
+}
+
+const addPrayer = (chatId, repo, prayer, from) => { return new Promise((resolve, reject) => {
   repo.getGroup(chatId)
     .then(group => {
       if(!group.prayers) { group.prayers = []; }
-      group.prayers.push({id : getNextId(group.prayers), request : prayer});
+      group.prayers.push({id : getNextId(group.prayers), request : `${prayer} - requested by ${from}`});
       repo.update({chatId : chatId, prayers : group.prayers})
         .then(resolve('Prayer added. Type /prayers to see the full list.'))
         .catch(reject(`Unable to add prayer to list`));
@@ -108,7 +117,7 @@ const removePrayer = (chatId, repo, prayerId) => { return new Promise((resolve, 
       const newList = removeFromList(group.prayers, parseInt(prayerId, 10));
 
       repo.update({chatId : chatId, prayers : newList})
-        .then(resolve('Prayer removed. Type /prayers to see the full list.'))
+        .then(resolve(`*Prayer removed. ${formatPrayers(newList)}`))
         .catch(reject(`Unable to remove prayer to list`));
     })
     .catch(error => reject(`Error removing prayers for this chatId: ${chatId}: ${JSON.stringify(error)}`));
