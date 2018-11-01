@@ -30,9 +30,9 @@ module.exports.process = (event, context, callback, http = axios, token = proces
     }
 
     http.post(`${apiURL}/sendMessage`, response)
-      .then((success) => callback(null, { statusCode: 200, body: 'OK' }))
+      .then(() => callback(null, { statusCode: 200, body: 'OK' }))
       .catch((error) => {
-        console.error(`error sending message: ${error}`);
+        console.error(`error sending message: ${JSON.stringify(response)}, \n\n${error}`);
         return callback(null, { statusCode: 200, body: 'OK' });
       });
   };

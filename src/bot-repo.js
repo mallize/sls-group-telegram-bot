@@ -14,7 +14,7 @@ if (process.env.IS_OFFLINE === 'true') {
     dynamoDb = new AWS.DynamoDB.DocumentClient();
 }
 
-module.exports.getGroup = (chatId) => {
+module.exports.getGroup = async (chatId) => {
     const params = {
         TableName: process.env.GROUP_TABLE,
         Key: {
@@ -22,64 +22,47 @@ module.exports.getGroup = (chatId) => {
         }
     };
 
-    return new Promise((resolve, reject) => {
-        dynamoDb.get(params, (error, result) => {
-            (error)
-                ? reject({error: `${error}`})
-                : resolve(result.Item);
-        });
-    });
+    return dynamoDb.get(params).promise()
+        .then((result) => result.Item)
+        .catch(error => Promise.reject({error: `${error}`})); 
 }
 
-module.exports.update = (group) => {
-    return new Promise((resolve, reject) => {
+module.exports.update = async (group) => {
+    const updatedGroup = DynamoDBUpdateObject(group);
 
-        const updatedGroup = DynamoDBUpdateObject(group);
+    const params = {
+        TableName: process.env.GROUP_TABLE,
+        ...updatedGroup,
+        ReturnValues: 'ALL_NEW',
+    };
 
-        const params = {
-            TableName: process.env.GROUP_TABLE,
-            ...updatedGroup,
-            ReturnValues: 'ALL_NEW',
-        };
-
-        dynamoDb.update(params, (error, result) => {
-            (error)
-                ? reject({error: `${error}`})
-                : resolve(result.Attributes);
-        });
-    });
+    return dynamoDb.update(params).promise()
+        .then(result => result.Attributes)
+        .catch(error => Promise.reject({error: `${error}`})); 
 };
 
-module.exports.create = (group) => {
+module.exports.create = async (group) => {
     const params = {
         TableName: process.env.GROUP_TABLE,
         Item: {...group}
     };
 
-    return new Promise((resolve, reject) => {
-        dynamoDb.put(params, (error, result) => {
-            (error)
-                ? reject({error: `${error}`})
-                : resolve(params.Item);
-        });
-    });
+    return dynamoDb.put(params).promise()
+        .then(() => params.Item)
+        .catch(error => Promise.reject({error: `${error}`}));
 };
 
-// module.exports.delete = (chatId) => {
-//     const params = {
-//         TableName: process.env.GROUP_TABLE,
-//         Key: {
-//             id: chatId
-//         }
-//     };
+module.exports.delete = async (chatId) => {
+    const params = {
+        TableName: process.env.GROUP_TABLE,
+        Key: {
+            id: chatId
+        }
+    };
 
-//     return new Promise((resolve, reject) => {
-//         dynamoDb.delete(params, (error, result) => {
-//             (error)
-//                 ? reject({error: `${error}`})
-//                 : resolve(params.Item);
-//         });
-//     });
-// };
+    return dynamoDb.delete(params).promise()
+        .then(() => params.Items )
+        .catch(error => Promise.reject({error: `${error}`}));
+};
 
 

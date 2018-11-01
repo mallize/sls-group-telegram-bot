@@ -2,20 +2,16 @@
 
 import botRepo from './bot-repo';
 
-module.exports.handle = (request, repo = botRepo) => {
-  return new Promise((resolve, reject) => {
-
+module.exports.handle = async (request, repo = botRepo) => {
     const {commandItem, args} = findCommandItem(request.command);
 
     if(commandItem) {
-      commandItem.fn(request.chatId, repo, args, request.from)
-        .then(msg => resolve({message : msg}))
-        .catch(err => reject({error : err}));
+      return commandItem.fn(request.chatId, repo, args, request.from)
+        .then(msg => ({message : msg}))
+        .catch(err => Promise.reject({error : err}));
     } else {
-      resolve({message : 'I do not support the request you sent me.'});
+      return {message : 'I do not support the request you sent me.'};
     }
-
-  });
 }
 
 const findCommandItem = (request, stop = false) => {
@@ -31,174 +27,94 @@ const findCommandItem = (request, stop = false) => {
 
 const formatOptional = (value, text) => value ? `\n\n${text} ${value}` : '';
 
-const getNext = (chatId, repo) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => resolve(`${getNextMeeting(group.meeting)}${formatOptional(group.study, "We will study")}${formatOptional(group.notes, "Notes:")}`))
-    .catch(error => reject(`Error retrieving the meeting for this chatId: ${chatId}: ${JSON.stringify(error)}`));
-  });
+const getNext = async (chatId, repo) => {
+  return withGroup(chatId, repo, group => `${getNextMeeting(group.meeting)}${formatOptional(group.study, "We will study")}${formatOptional(group.notes, "Notes:")}`);
 }
 
 const getHelp = () => Promise.resolve(generalMessage);
 
-const setStudy = (chatId, repo, study) => { return new Promise((resolve, reject) => {
-  repo.update({chatId : chatId, study : study})
-    .then(resolve('Study updated. Type /next to see the group meeting time, study and notes.'))
-    .catch(error => reject(`Error updating the study for this chatId: ${chatId}: ${JSON.stringify(error)}`));
-  });
+const setStudy = async (chatId, repo, study) => { 
+  return setGroupFields(chatId, repo, {study : study}, 'Study updated. Type /next to see the group meeting time, study and notes.');
 }
 
-const setNotes = (chatId, repo, notes) => { return new Promise((resolve, reject) => {
-    repo.update({chatId : chatId, notes : notes})
-      .then(resolve('Notes updated. Type /next to see the group meeting time, study and notes.'))
-      .catch(error => reject(`Error updating the study for this chatId: ${chatId}: ${JSON.stringify(error)}`));    
-  });
+const setNotes = async (chatId, repo, notes) => { 
+  return setGroupFields(chatId, repo, {notes : notes}, 'Notes updated. Type /next to see the group meeting time, study and notes.');
 }
 
-const create = (chatId, repo, title) => { return new Promise((resolve, reject) => {
-  repo.create({chatId : chatId, title: title})
-    .then(resolve('Group created. Type /help to see a list of commands I support.'))
-    .catch(reject(`Unable to create a group for this group chat`));
-  });
+const create = async (chatId, repo, title) => { 
+  return setGroupFields(chatId, repo, {title : title}, 'Group created. Type /help to see a list of commands I support.');
 }
 
-const clearPrayers = (chatId, repo) => { return new Promise((resolve, reject) => {
-  repo.update({chatId : chatId, prayers : []})
-    .then(resolve('Prayer list cleared.'))
-    .catch(reject(`Unable to clear prayer list`));
-  });
+const clearFood = async (chatId, repo) => { 
+  return setGroupFields(chatId, repo, {food : []}, 'Food list cleared.');
 }
 
-const clearNotes = (chatId, repo) => { return new Promise((resolve, reject) => {
-  repo.update({chatId : chatId, notes : null})
-    .then(resolve('Notes cleared.'))
-    .catch(reject(`Unable to clear notes`));
-  });
+const clearPrayers = async (chatId, repo) => { 
+  return setGroupFields(chatId, repo, {prayers : []}, 'Prayer list cleared.');
 }
 
-const clearStudy = (chatId, repo) => { return new Promise((resolve, reject) => {
-  repo.update({chatId : chatId, study : null})
-    .then(resolve('Study cleared.'))
-    .catch(reject(`Unable to clear study`));
-  });
+const clearNotes = async (chatId, repo) => { 
+  return setGroupFields(chatId, repo, {notes : null}, 'Notes cleared.');
 }
 
-const formatPrayers = (prayers) => `*Current Prayer Requests*\n${prayers.map(prayer => `${prayer.id} - ${prayer.request}\n`).join('')}`;
-
-const getPrayers = (chatId, repo) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
-      const prayers = group.prayers;
-      if(!Array.isArray(prayers) || !prayers.length) {
-        resolve('There are currently no prayer reqeusts. Type /addPrayer followed by your request to add a prayer to the list.');
-      } else {
-        resolve(formatPrayers(prayers));
-      }
-    })
-    .catch(error => reject(`Error retrieving the prayers for this chatId: ${chatId}: ${JSON.stringify(error)}`));
-  });
+const clearStudy = async (chatId, repo) => { 
+  return setGroupFields(chatId, repo, {study : null}, 'Study cleared.');
 }
 
-const addPrayer = (chatId, repo, prayer, from) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
-      if(!group.prayers) { group.prayers = []; }
-      group.prayers.push({id : getNextId(group.prayers), request : `${prayer} - requested by ${from}`});
-      repo.update({chatId : chatId, prayers : group.prayers})
-        .then(resolve('Prayer added. Type /prayers to see the full list.'))
-        .catch(reject(`Unable to add prayer to list`));
-    })
-    .catch(error => reject(`Error adding prayers for this chatId: ${chatId}: ${JSON.stringify(error)}`));
-  });
+const getPrayers = async (chatId, repo) => {
+  return withGroup(chatId, repo, (group) => formatPrayers(group.prayers));
 }
 
-const removePrayer = (chatId, repo, prayerId) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
+const addPrayer = async (chatId, repo, prayer, from) => { 
+  return updateGroup(chatId, repo, (group) => ({
+    updatedFields : {prayers : addToList(group.prayers, {id : getNextId(group.prayers), request : `${prayer} - requested by ${from}`})},
+    successMsg : 'Prayer added. Type /prayers to see the full list.',
+    errorMsg : 'Could not add prayer.'
+  }));
+}
+
+const removePrayer = async (chatId, repo, prayerId) => { 
+  return updateGroup(chatId, repo, group => {
       const newList = removeFromList(group.prayers, parseInt(prayerId, 10));
-
-      repo.update({chatId : chatId, prayers : newList})
-        .then(resolve(`*Prayer removed. ${formatPrayers(newList)}`))
-        .catch(reject(`Unable to remove prayer to list`));
-    })
-    .catch(error => reject(`Error removing prayers for this chatId: ${chatId}: ${JSON.stringify(error)}`));
-  });
-}
-
-const removeFromList = (list, listId) => {
-  return list
-    .filter(item => item.id != listId)
-    .map((item, index) => ({ ...item, id : index + 1 }));
-}
-
-const isEmptyArray = (list) => (!Array.isArray(list) || !list.length);
-
-const nextId = (list) => {
-  const ids = list.map(x => x.id);
-  return Math.max( ...ids ) + 1;
-}
-
-const getNextId = (list) => isEmptyArray(list) ? 1 : nextId(list);
-
-const getFood = (chatId, repo) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
-      const food = group.food;
-      if(!Array.isArray(food) || !food.length) {
-        resolve('No one has offered to bring food. Type /bringFood to offer to bring something. (Example: /bringFood Pizza)');
-      } else {
-        resolve(group.food.map(entry => `${entry.id} - ${entry.name} offered to bring ${entry.item}\n`).join(''));
+      return {
+        updatedFields: {prayers : newList}, 
+        successMsg : `Prayer removed\n${formatPrayers(newList)}`,
+        errorMsg : `Unable to remove prayer to list`
       }
-    })
-    .catch(error => reject(`Error retrieving the food for this chatId: ${chatId}: ${JSON.stringify(error)}`));
   });
 }
 
-const bringFood = (chatId, repo, food, from) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
-      if(!group.food) { group.food = []; }
-      group.food.push({id : getNextId(group.food), item : food, name : from});
-      
-      repo.update({chatId : chatId, food : group.food})
-        .then(resolve('Food added. Type /food to see the full list.'))
-        .catch(reject(`Unable to add food to list`));
-    })
-    .catch(error => reject(`Error adding food for this chatId: ${chatId}: ${JSON.stringify(error)}`));
+const getFood = async (chatId, repo) => { 
+  return withGroup(chatId, repo, group => {
+    return isEmptyArray(group.food) 
+      ? 'No one has offered to bring food. Type /bringFood to offer to bring something. (Example: /bringFood Pizza)'
+      : group.food.map(entry => `${entry.id} - ${entry.name} offered to bring ${entry.item}\n`).join('');
   });
 }
 
-const removeFood = (chatId, repo, foodId) => { return new Promise((resolve, reject) => {
-  repo.getGroup(chatId)
-    .then(group => {
-      const newList = removeFromList(group.food, parseInt(foodId, 10));
-
-      repo.update({chatId : chatId, food : newList})
-        .then(resolve('Food removed. Type /food to see the full list.'))
-        .catch(reject(`Unable to remove food to list`));
-    })
-    .catch(error => reject(`Error removing food for this chatId: ${chatId}: ${JSON.stringify(error)}`));
-  });
+const bringFood = async (chatId, repo, food, from) => { 
+  return updateGroup(chatId, repo, group => ({
+    updatedFields : {food : addToList(group.food, {id : getNextId(group.food), item : food, name : from})},
+    successMsg : 'Food added. Type /food to see the full list.',
+    errorMsg : `Unable to add food to list`
+  }));
 }
 
-const clearFood = (chatId, repo) => { return new Promise((resolve, reject) => {
-  repo.update({chatId : chatId, food : []})
-      .then(resolve('Food list cleared.'))
-      .catch(reject(`Unable to clear food list`));
-  });
+const removeFood = async (chatId, repo, foodId) => { 
+  return updateGroup(chatId, repo, group => ({
+    updatedFields : {food : removeFromList(group.food, parseInt(foodId, 10))},
+    successMsg : 'Food removed. Type /food to see the full list.',
+    errorMsg : `Unable to remove food to list`
+  }));
 }
 
-const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-const setMeeting = (chatId, repo, meeting) => { return new Promise((resolve, reject) => {
+const setMeeting = async (chatId, repo, meeting) => { 
   const splitCommand = meeting.split(" ");
   const weekDay = splitCommand[0];
   const time = splitCommand[1];
   const day = days.indexOf(weekDay);
 
-  repo.update({chatId : chatId, meeting : {day : day, time : time}})
-    .then(resolve('Meeting set. Type /next to see the group meeting time, study and notes.'))
-    .catch(error => reject(`Error setting the meeting for this chatId: ${chatId}: ${JSON.stringify(error)}`));
-  });
+  return setGroupFields(chatId, repo, {meeting : {day : day, time : time}}, 'Meeting set. Type /next to see the group meeting time, study and notes.');
 }
 
 const getNextMeeting = (meeting) => {
@@ -212,6 +128,57 @@ const getNextMeeting = (meeting) => {
 
   return `Our next meeting is ${days[day]} ${resultDate.getMonth() + 1}-${resultDate.getDate()}-${resultDate.getFullYear()}, ${time}`;
 }
+
+const isEmptyArray = (list) => (!Array.isArray(list) || !list.length);
+
+const updateGroup = async (chatId, repo, fn) => {
+  return repo.getGroup(chatId).then(group => {
+      const {updatedFields, successMsg, errorMsg} = fn(group);
+      return repo.update({chatId : chatId, ...updatedFields})
+        .then(() => successMsg)
+        .catch(() => Promise.reject(errorMsg));
+    })
+    .catch(error => Promise.reject(`Error working with group: ${chatId}: ${JSON.stringify(error)}`));
+}
+
+const withGroup = async (chatId, repo, fn) => {
+  return repo.getGroup(chatId)
+    .then(group => fn(group))
+    .catch(error => Promise.reject(`Can not find group: ${chatId}: ${JSON.stringify(error)}`));
+}
+
+const setGroupFields = async (chatId, repo, fields, successMsg) => {
+  return repo.update({chatId : chatId, ...fields})
+    .then(() => successMsg)
+    .catch(error => Promise.reject(`Error updating the study for this chatId: ${chatId}: ${JSON.stringify(error)}`));
+}
+
+const formatPrayers = (prayers) => {
+  return isEmptyArray(prayers) 
+    ?'There are currently no prayer reqeusts. Type /addPrayer followed by your request to add a prayer to the list.'
+    : `*Current Prayer Requests*\n${prayers.map(prayer => `${prayer.id} - ${prayer.request}\n`).join('')}`;
+}
+
+const addToList = (list, value) => {
+  if(!list) { list = [] }
+  list.push(value);
+  return list;
+}
+
+const removeFromList = (list, listId) => {
+  return list
+    .filter(item => item.id != listId)
+    .map((item, index) => ({ ...item, id : index + 1 }));
+}
+
+const nextId = (list) => {
+  const ids = list.map(x => x.id);
+  return Math.max( ...ids ) + 1;
+}
+
+const getNextId = (list) => isEmptyArray(list) ? 1 : nextId(list);
+
+const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const commands = [
   {command : '/about', fn : getHelp, description : 'describes this bot and the requests it accepts'},

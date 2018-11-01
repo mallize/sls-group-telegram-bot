@@ -44,6 +44,26 @@ describe('sending commands to bot', () => {
             });
     });
 
+
+    it('should reject when an error in /next', (done) => {
+
+        const repo = {
+            getGroup : (chatId) => {
+                return Promise.reject('error');
+            }
+        }
+
+        bot.handle({chatId : "-11111111111", command : "/next", from : "Matt"}, repo)
+            .then(response => {
+                chai.assert.fail(1, 0, "should not work")
+                done("should hit catch");
+            })
+            .catch((error) => {
+                chai.assert(error.error.startsWith("Can not find group:"));
+                done();
+            });
+    });
+
     it('should handle /prayers', (done) => {
         const expected = '*Current Prayer Requests*\n1 - Jimmy Surgery\n2 - Anne Surgery\n';
 
@@ -127,7 +147,8 @@ describe('sending commands to bot', () => {
     it('should handle /removePrayer', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/removePrayer 2"}, botTestRepo)
             .then(response => {
-                chai.assert(response.message.startsWith("*Prayer removed.", "did not start with expected"));
+                console.log(`response = ${response.message}`);
+                chai.assert(response.message.startsWith("Prayer removed", "did not start with expected"));
                 done();
             })
             .catch((error) => {
