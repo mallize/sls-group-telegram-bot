@@ -5,8 +5,8 @@
   "author": "Matt Clement mallize@gmail.com",
   "scripts": {
     "start": "rm -rf .serverless/ && ./node_modules/.bin/serverless offline start",
-    "test": "mocha --recursive -d --require babel-core/register --timeout 60000 --exit",
-    "debug": "mocha --recursive -d --require babel-core/register --debug-brk",
+    "test": "mocha --inspect --recursive -d --timeout 60000 --exit",
+    "debug": "mocha --recursive -d --require babel-core/register --inspect-brk",
     "deploy": "./node_modules/.bin/serverless deploy"
   },
   "dependencies": {
