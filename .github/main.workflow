@@ -1,16 +1,16 @@
-workflow "New workflow" {
+workflow "On git push deploy to AWS" {
   on = "push"
-  resolves = ["GitHub Action for npm-1"]
+  resolves = ["Serverless Deploy"]
 }
 
-action "GitHub Action for npm" {
+action "Install node modules" {
   uses = "actions/npm@de7a3705a9510ee12702e124482fad6af249991b"
   runs = "npm install"
 }
 
-action "GitHub Action for npm-1" {
+action "Serverless Deploy" {
   uses = "actions/npm@de7a3705a9510ee12702e124482fad6af249991b"
-  needs = ["GitHub Action for npm"]
   runs = "npm run deploy"
   secrets = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"]
+  needs = ["Install node modules"]
 }
