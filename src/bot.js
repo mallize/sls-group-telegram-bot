@@ -14,7 +14,9 @@ module.exports.handle = async (request, repo = botRepo) => {
     }
 }
 
-const findCommandItem = (request, stop = false) => {
+const findCommandItem = (req, stop = false) => {
+  const request = req.replace('@LifeGroup_Bot', '')  // remove @bot
+
   const argIndex = request.indexOf(" ");
   const command = (argIndex == -1) ? request : request.slice(0, argIndex); 
   const args = (argIndex == -1) ? undefined : request.slice(argIndex + 1, request.length);
@@ -84,12 +86,14 @@ const removePrayer = async (chatId, repo, prayerId) => {
   });
 }
 
-const getFood = async (chatId, repo) => { 
-  return withGroup(chatId, repo, group => {
-    return isEmptyArray(group.food) 
+const formatFood = (food) => {
+  return isEmptyArray(food) 
       ? 'No one has offered to bring food. Type /bringFood to offer to bring something. (Example: /bringFood Pizza)'
-      : group.food.map(entry => `${entry.id} - ${entry.name} offered to bring ${entry.item}\n`).join('');
-  });
+      : food.map(entry => `${entry.id} - ${entry.name} offered to bring ${entry.item}\n`).join('');
+}
+
+const getFood = async (chatId, repo) => { 
+  return withGroup(chatId, repo, group => formatFood(group.food));
 }
 
 const bringFood = async (chatId, repo, food, from) => { 
@@ -101,11 +105,14 @@ const bringFood = async (chatId, repo, food, from) => {
 }
 
 const removeFood = async (chatId, repo, foodId) => { 
-  return updateGroup(chatId, repo, group => ({
-    updatedFields : {food : removeFromList(group.food, parseInt(foodId, 10))},
-    successMsg : 'Food removed. Type /food to see the full list.',
-    errorMsg : `Unable to remove food to list`
-  }));
+  return updateGroup(chatId, repo, group => {
+    const updatedFood = removeFromList(group.food, parseInt(foodId, 10))
+    return {
+      updatedFields : {food : updatedFood},
+      successMsg : `Food removed.\n${formatFood(updatedFood)} `,
+      errorMsg : `Unable to remove food to list`
+    }
+  });
 }
 
 const setMeeting = async (chatId, repo, meeting) => { 
