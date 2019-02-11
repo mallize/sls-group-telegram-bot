@@ -2,17 +2,7 @@
 import AWS from 'aws-sdk';
 import {DynamoDBUpdateObject} from './dynamodb-util';
 
-let dynamoDb;
-if (process.env.IS_OFFLINE === 'true') {
-    dynamoDb = new AWS.DynamoDB.DocumentClient({
-        region: 'localhost',
-        endpoint: 'http://localhost:8000',
-        accessKeyId: 'accessKeyId', // for tests
-        secretAccessKey: 'secretAccessKey' // for tests
-    });
-} else {
-    dynamoDb = new AWS.DynamoDB.DocumentClient();
-}
+const dynamoDb = new AWS.DynamoDB.DocumentClient()
 
 module.exports.getGroup = async (chatId) => {
     const params = {

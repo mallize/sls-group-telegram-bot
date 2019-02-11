@@ -2,8 +2,6 @@ service: sls-group-telegram-bot
 
 plugins:
   - serverless-webpack
-  - serverless-dynamodb-local
-  - serverless-offline
 
 provider:
   name: aws
@@ -52,22 +50,6 @@ resources:
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
-    includeModules: true
-  serverless-offline:
-    port: 7001
-    skipCacheInvalidation: false
-  dynamodb:
-    start:
-      port: 8000
-      inMemory: true
-      migrate: true
-      sharedDb: true
-      seed: true
-    seed:
-      domain:
-        sources:
-          - table: ${self:provider.environment.GROUP_TABLE}
-            sources: []
-        
+    includeModules: true      
 
 
