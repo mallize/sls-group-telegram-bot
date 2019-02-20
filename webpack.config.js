@@ -8,7 +8,7 @@ module.exports = {
     target: 'node',
     mode: 'production',
     optimization: {
-        minimize: true
+        minimize: false
     },
     performance: {
         hints: false
