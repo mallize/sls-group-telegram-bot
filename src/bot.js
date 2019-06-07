@@ -211,7 +211,7 @@ const getCommands = () => {
   return commands.map(cmd => ` ${cmd.command} - ${cmd.description}\n${(cmd.usage) ? '    example: ' + cmd.usage + '\n' : ''}`).join('');
 }
 
-const generalMessage = `I am a bot designed by Matt Clement to help keep track of group meetings and activities.\n\nI support the following requests:\n${getCommands()}`;
+const generalMessage = `I am a bot designed to help keep track of group meetings and activities.\n\nI support the following requests:\n${getCommands()}`;
 
 
 
