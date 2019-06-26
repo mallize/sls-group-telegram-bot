@@ -2,6 +2,7 @@ service: sls-group-telegram-bot
 
 plugins:
   - serverless-webpack
+  - serverless-offline
 
 provider:
   name: aws
@@ -48,6 +49,9 @@ resources:
           WriteCapacityUnits: 1
 
 custom:
+  serverless-offline:
+    port: 7002
+    skipCacheInvalidation: false
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true      

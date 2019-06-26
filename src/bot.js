@@ -1,6 +1,6 @@
 'use strict';
 
-import botRepo from './bot-repo';
+import * as botRepo from './bot-repo';
 
 module.exports.handle = async (request, repo = botRepo) => {
     const {commandItem, args} = findCommandItem(request.command);

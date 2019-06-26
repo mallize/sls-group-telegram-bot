@@ -26,9 +26,25 @@
     "eslint-config-google": "^0.12.0",
     "jest": "^24.1.0",
     "serverless": "^1.41.1",
+    "serverless-offline": "3.25.4",
     "serverless-webpack": "5.1.5",
     "webpack": "4.12.0",
     "webpack-node-externals": "1.7.2"
   },
-  "testEnvironment": "node"
+  "jest": {
+    "verbose": true,
+    "testRegex": "/test/.*\\.(test|spec)\\.(ts|tsx|js|jsx)$",
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "testEnvironment": "node"
+  }
 }
