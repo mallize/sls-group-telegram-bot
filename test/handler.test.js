@@ -5,6 +5,8 @@ import * as handler from '../src/handler';
 import * as testRepo from './bot-repo.mock';
 
 describe('sending command events to handler', () => {
+  process.env.TELEGRAM_TOKEN = "";
+
     it('should handle /next', (done) => {
         event.body = event.body.replace("{{command}}", "/next");
         const next = event;
@@ -31,7 +33,7 @@ describe('sending command events to handler', () => {
             }
         };
 
-        handler.process(next, null, callback, mockHttp, "token", testRepo);
+        handler.handle(next, null, callback, mockHttp, "token", testRepo);
     });
 
     it('should create a new group when being invited', (done) => {
@@ -58,7 +60,7 @@ describe('sending command events to handler', () => {
             }
         };
 
-        handler.process(event, null, callback, mockHttp, "token", testRepo);
+        handler.handle(event, null, callback, mockHttp, "token", testRepo);
     });
 
     it('should ignore events we do not care about', (done) => {
@@ -85,6 +87,6 @@ describe('sending command events to handler', () => {
             }
         };
 
-        handler.process(event, null, callback, mockHttp, "token", testRepo);
+        handler.handle(event, null, callback, mockHttp, "token", testRepo);
     });
 });

@@ -23,7 +23,7 @@ provider:
 
 functions:
   process:
-    handler: src/handler.process
+    handler: src/handler.handle
     events:
       - http:
           path: /
