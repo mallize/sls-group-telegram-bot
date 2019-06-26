@@ -4,7 +4,7 @@ import {DynamoDBUpdateObject} from './dynamodb-util';
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient()
 
-module.exports.getGroup = async (chatId) => {
+export const getGroup = async (chatId) => {
     const params = {
         TableName: process.env.GROUP_TABLE,
         Key: {
@@ -17,7 +17,7 @@ module.exports.getGroup = async (chatId) => {
         .catch(error => Promise.reject({error: `${error}`})); 
 }
 
-module.exports.update = async (group) => {
+export const update = async (group) => {
     const updatedGroup = DynamoDBUpdateObject(group);
 
     const params = {
@@ -31,7 +31,7 @@ module.exports.update = async (group) => {
         .catch(error => Promise.reject({error: `${error}`})); 
 };
 
-module.exports.create = async (group) => {
+export const create = async (group) => {
     const params = {
         TableName: process.env.GROUP_TABLE,
         Item: {...group}
@@ -42,7 +42,7 @@ module.exports.create = async (group) => {
         .catch(error => Promise.reject({error: `${error}`}));
 };
 
-module.exports.delete = async (chatId) => {
+export const remove = async (chatId) => {
     const params = {
         TableName: process.env.GROUP_TABLE,
         Key: {

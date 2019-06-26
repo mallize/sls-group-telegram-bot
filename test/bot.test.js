@@ -1,5 +1,5 @@
-import bot from '../src/bot';
-import botTestRepo from './bot-repo.mock';
+import * as bot from '../src/bot';
+import * as botTestRepo from './bot-repo.mock';
 
 describe('sending commands to bot', () => {
 

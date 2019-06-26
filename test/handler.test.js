@@ -1,8 +1,8 @@
 import event from './resources/event.json';
 import joinevent from './resources/joingroup-event.json';
 import ignoreevent from './resources/wedontcare-event.json';
-import handler from '../src/handler';
-import testRepo from './bot-repo.mock';
+import * as handler from '../src/handler';
+import * as testRepo from './bot-repo.mock';
 
 describe('sending command events to handler', () => {
     it('should handle /next', (done) => {

@@ -4,7 +4,7 @@ import axios from 'axios';
 import * as bot from './bot';
 import * as botRepo from './bot-repo';
 
-module.exports.process = (event, context, callback, http = axios, token = process.env.TELEGRAM_TOKEN, repo = botRepo) => {
+export const process = (event, context, callback, http = axios, token = process.env.TELEGRAM_TOKEN, repo = botRepo) => {
   //console.log(`Received event ${JSON.stringify(event)}`);
   const apiURL = `https://api.telegram.org/bot${token}`;
 
