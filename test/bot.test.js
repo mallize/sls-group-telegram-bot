@@ -1,8 +1,5 @@
-import chai from 'chai';
 import bot from '../src/bot';
-import botTestRepo from './bot-repo.test';
-
-chai.config.includeStack = true;
+import botTestRepo from './bot-repo.mock';
 
 describe('sending commands to bot', () => {
 
@@ -35,7 +32,7 @@ describe('sending commands to bot', () => {
 
         bot.handle({chatId : "-11111111111", command : "/next", from : "Matt"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal(expected)
+                expect(response.message).toEqual(expected)
                 done();
             })
             .catch((error) => {
@@ -55,11 +52,10 @@ describe('sending commands to bot', () => {
 
         bot.handle({chatId : "-11111111111", command : "/next", from : "Matt"}, repo)
             .then(response => {
-                chai.assert.fail(1, 0, "should not work")
                 done("should hit catch");
             })
             .catch((error) => {
-                chai.assert(error.error.startsWith("Can not find group:"));
+                expect(error.error).toMatch(/Can not find group:/);
                 done();
             });
     });
@@ -69,12 +65,11 @@ describe('sending commands to bot', () => {
 
         bot.handle({chatId : "-11111111111", command : "/prayers"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal(expected);
+                expect(response.message).toEqual(expected);
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
-                done(error);
+                done(`failed with ${JSON.stringify(error)}`);
             });
 
     });
@@ -82,11 +77,10 @@ describe('sending commands to bot', () => {
     it('should handle /clearPrayers', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/clearPrayers"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Prayer list cleared.");
+                expect(response.message).toEqual("Prayer list cleared.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -94,11 +88,10 @@ describe('sending commands to bot', () => {
     it('should handle /addPrayer', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/addPrayer This is a test prayer"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Prayer added. Type /prayers to see the full list.");
+                expect(response.message).toEqual("Prayer added. Type /prayers to see the full list.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -106,11 +99,10 @@ describe('sending commands to bot', () => {
     it('should handle /addPrayer with @', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/addPrayer@LifeGroup_Bot This is a test prayer"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Prayer added. Type /prayers to see the full list.");
+                expect(response.message).toEqual("Prayer added. Type /prayers to see the full list.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -118,11 +110,10 @@ describe('sending commands to bot', () => {
     it('should handle /add prayer', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/add prayer This is a test prayer"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Prayer added. Type /prayers to see the full list.");
+                expect(response.message).toEqual("Prayer added. Type /prayers to see the full list.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -147,11 +138,10 @@ describe('sending commands to bot', () => {
 
         bot.handle({chatId : "-11111111111", command : "/addPrayer This is a test prayer"}, repo, "Joe Smith")
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Prayer added. Type /prayers to see the full list.");
+                expect(response.message).toEqual("Prayer added. Type /prayers to see the full list.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -160,11 +150,10 @@ describe('sending commands to bot', () => {
         bot.handle({chatId : "-11111111111", command : "/removePrayer 2"}, botTestRepo)
             .then(response => {
                 console.log(`response = ${response.message}`);
-                chai.assert(response.message.startsWith("Prayer removed", "did not start with expected"));
+                expect(response.message).toMatch(/Prayer removed/);
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -174,11 +163,10 @@ describe('sending commands to bot', () => {
 
         bot.handle({chatId : "-11111111111", command : "/food"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal(expected);
+                expect(response.message).toEqual(expected);
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
 
@@ -187,11 +175,10 @@ describe('sending commands to bot', () => {
     it('should handle /bringFood', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/bringFood Pizza", from : 'Matt Clement'}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Food added. Type /food to see the full list.");
+                expect(response.message).toEqual("Food added. Type /food to see the full list.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -217,11 +204,10 @@ describe('sending commands to bot', () => {
 
         bot.handle({chatId : "-11111111111", command : "/bringFood Pizza", from : 'Matt Clement'}, repo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Food added. Type /food to see the full list.");
+                expect(response.message).toEqual("Food added. Type /food to see the full list.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -229,11 +215,10 @@ describe('sending commands to bot', () => {
     it('should handle /clearFood', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/clearFood"}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Food list cleared.");
+                expect(response.message).toEqual("Food list cleared.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -241,11 +226,10 @@ describe('sending commands to bot', () => {
     it('should handle /removeFood', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/removeFood 1"}, botTestRepo)
             .then(response => {                
-                chai.assert(response.message.startsWith("Food removed", "did not start with expected"));
+                expect(response.message).toMatch(/Food removed/);
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -253,11 +237,10 @@ describe('sending commands to bot', () => {
     it('should handle /removeFood when multiple ids are passed', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/removeFood 1,2"}, botTestRepo)
             .then(response => {                
-                chai.assert(response.message.startsWith("Food removed", "did not start with expected"));
+                expect(response.message).toMatch(/Food removed/);
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -265,11 +248,10 @@ describe('sending commands to bot', () => {
     it('should handle /setStudy', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/setStudy Ch. 1 of Matt's great bood", from : 'Matt Clement'}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Study updated. Type /next to see the group meeting time, study and notes.");
+                expect(response.message).toEqual("Study updated. Type /next to see the group meeting time, study and notes.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -277,11 +259,10 @@ describe('sending commands to bot', () => {
     it('should handle /setNotes', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/setNotes bring money for book", from : 'Matt Clement'}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Notes updated. Type /next to see the group meeting time, study and notes.");
+                expect(response.message).toEqual("Notes updated. Type /next to see the group meeting time, study and notes.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -289,11 +270,10 @@ describe('sending commands to bot', () => {
     it('should handle /create', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/create Matt's bot", from : 'Matt Clement'}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Group created. Type /help to see a list of commands I support.");
+                expect(response.message).toEqual("Group created. Type /help to see a list of commands I support.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });
@@ -302,11 +282,10 @@ describe('sending commands to bot', () => {
     it('should handle /setMeeting', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/setMeeting Monday 5pm", from : 'Matt Clement'}, botTestRepo)
             .then(response => {
-                chai.expect(response.message).to.deep.equal("Meeting set. Type /next to see the group meeting time, study and notes.");
+                expect(response.message).toEqual("Meeting set. Type /next to see the group meeting time, study and notes.");
                 done();
             })
             .catch((error) => {
-                chai.assert.fail(0, 1, `failed with ${JSON.stringify(error)}`);
                 done(error);
             });
     });

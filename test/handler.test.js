@@ -1,9 +1,8 @@
-import assert from 'chai';
 import event from './resources/event.json';
 import joinevent from './resources/joingroup-event.json';
 import ignoreevent from './resources/wedontcare-event.json';
 import handler from '../src/handler';
-import testRepo from './bot-repo.test';
+import testRepo from './bot-repo.mock';
 
 describe('sending command events to handler', () => {
     it('should handle /next', (done) => {
@@ -23,8 +22,7 @@ describe('sending command events to handler', () => {
         const callback = (err, success) => {
             if (success.statusCode != 200) {
                 try {
-                    assert.fail(0, 1, `Expected ${success.statusCode} to be ${200}`);
-                    done();
+                    done(`Expected ${success.statusCode} to be ${200}`);
                 } catch (error) {
                     done(error);
                 }
@@ -51,8 +49,7 @@ describe('sending command events to handler', () => {
         const callback = (err, success) => {
             if (success.statusCode != 200) {
                 try {
-                    assert.fail(0, 1, `Expected ${success.statusCode} to be ${200}`);
-                    done();
+                    done(`Expected ${success.statusCode} to be ${200}`);
                 } catch (error) {
                     done(error);
                 }
@@ -79,8 +76,7 @@ describe('sending command events to handler', () => {
         const callback = (err, success) => {
             if (success.statusCode != 200) {
                 try {
-                    assert.fail(0, 1, `Expected ${success.statusCode} to be ${200}`);
-                    done();
+                    done(`Expected ${success.statusCode} to be ${200}`);
                 } catch (error) {
                     done(error);
                 }
