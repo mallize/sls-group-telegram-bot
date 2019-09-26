@@ -50,7 +50,7 @@ export const handle = (event, context, callback, http = axios, token = process.e
       .then(response => sendMessage(response.message))
       .catch((error) => {
         console.error(`error occured interacting with bot ${JSON.stringify(error)}`);
-        sendMessage(`There was an error processing your request.`);
+        sendMessage(`Unsupported command. Type /help to see a list of supported commands.`);
       });
   } catch(err) {
     console.error(`an unexpected error occured ${err}`);

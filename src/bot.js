@@ -10,7 +10,7 @@ export const handle = async (request, repo = botRepo) => {
         .then(msg => ({message : msg}))
         .catch(err => Promise.reject({error : err}));
     } else {
-      return {message : 'I do not support the request you sent me.'};
+      return {message : 'I do not support the command you sent me.'};
     }
 }
 
