@@ -166,11 +166,13 @@ const formatPrayers = (prayers) => {
     : `*Current Prayer Requests*\n${prayers.map(prayer => `${prayer.id} - ${prayer.request}\n`).join('')}`;
 }
 
-const addToList = (list, value) => {
-  if(!list) { list = [] }
-  list.push(value);
-  return list;
-}
+// const addToList = (list, value) => {
+//   if(!list) { list = [] }
+//   list.push(value);
+//   return list;
+// }
+
+const addToList = (list, value) => (list) ? [...list, value] : [value]
 
 const removeFromList = (list, listId) => {
   return list
