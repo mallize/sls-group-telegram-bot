@@ -141,7 +141,7 @@ const isEmptyArray = (list) => (!Array.isArray(list) || !list.length);
 const updateGroup = async (chatId, repo, fn) => {
   return repo.getGroup(chatId).then(group => {
       const {updatedFields, successMsg, errorMsg} = fn(group);
-      return repo.update({chatId : chatId, ...updatedFields})
+      return repo.update({...updatedFields, chatId : chatId})
         .then(() => successMsg)
         .catch(() => Promise.reject(errorMsg));
     })
