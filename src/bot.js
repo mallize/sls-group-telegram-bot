@@ -83,7 +83,7 @@ const removePrayer = async (chatId, repo, prayerId) => {
         successMsg : `Prayer removed\n${formatPrayers(newList)}`,
         errorMsg : `Unable to remove prayer to list`
       }
-  });
+  })
 }
 
 const formatFood = (food) => {
