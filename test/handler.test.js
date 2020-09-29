@@ -7,7 +7,7 @@ import * as testRepo from './bot-repo.mock';
 describe('sending command events to handler', () => {
   process.env.TELEGRAM_TOKEN = "";
 
-    it('should handle /next', (done) => {
+    it('should handle /next', async (done) => {
         event.body = event.body.replace("{{command}}", "/next");
         const next = event;
 
@@ -21,22 +21,21 @@ describe('sending command events to handler', () => {
             }
         };
 
-        const callback = (err, success) => {
-            if (success.statusCode != 200) {
-                try {
-                    done(`Expected ${success.statusCode} to be ${200}`);
-                } catch (error) {
-                    done(error);
-                }
-            } else {
-                done();
-            }
-        };
+        const success = await handler.handle(next, null, null, mockHttp, "token", testRepo)
 
-        handler.handle(next, null, callback, mockHttp, "token", testRepo);
+        if (success.statusCode != 200) {
+          try {
+              done(`Expected ${success.statusCode} to be ${200}`);
+          } catch (error) {
+              done(error);
+          }
+        } else {
+            done();
+        }          
+
     });
 
-    it('should create a new group when being invited', (done) => {
+    it('should create a new group when being invited', async (done) => {
         
         const event = joinevent;
 
@@ -48,22 +47,21 @@ describe('sending command events to handler', () => {
             }
         };
 
-        const callback = (err, success) => {
-            if (success.statusCode != 200) {
-                try {
-                    done(`Expected ${success.statusCode} to be ${200}`);
-                } catch (error) {
-                    done(error);
-                }
-            } else {
-                done();
+        const success = await handler.handle(event, null, null, mockHttp, "token", testRepo)
+          
+        if (success.statusCode != 200) {
+            try {
+                done(`Expected ${success.statusCode} to be ${200}`);
+            } catch (error) {
+                done(error);
             }
-        };
-
-        handler.handle(event, null, callback, mockHttp, "token", testRepo);
+        } else {
+            done();
+        }          
+        
     });
 
-    it('should ignore events we do not care about', (done) => {
+    it('should ignore events we do not care about', async (done) => {
         
         const event = ignoreevent;
 
@@ -75,18 +73,16 @@ describe('sending command events to handler', () => {
             }
         };
 
-        const callback = (err, success) => {
-            if (success.statusCode != 200) {
-                try {
-                    done(`Expected ${success.statusCode} to be ${200}`);
-                } catch (error) {
-                    done(error);
-                }
-            } else {
-                done();
-            }
-        };
+        const success = await handler.handle(event, null, null, mockHttp, "token", testRepo);
 
-        handler.handle(event, null, callback, mockHttp, "token", testRepo);
+        if (success.statusCode != 200) {
+          try {
+              done(`Expected ${success.statusCode} to be ${200}`);
+          } catch (error) {
+              done(error);
+          }
+        } else {
+            done();
+        }
     });
 });

@@ -1,3 +1,5 @@
+org: mallize
+app: sls-group-telegram-bot
 service: sls-group-telegram-bot
 
 plugins:
