@@ -81,7 +81,7 @@ const removePrayer = async (chatId, repo, prayerId) => {
       return {
         updatedFields: {prayers : newList}, 
         successMsg : `Prayer removed\n${formatPrayers(newList)}`,
-        errorMsg : `Unable to remove prayer to list`
+        errorMsg : `Unable to remove prayer from list`
       }
   })
 }
@@ -110,7 +110,7 @@ const removeFood = async (chatId, repo, foodId) => {
     return {
       updatedFields : {food : updatedFood},
       successMsg : `Food removed.\n${formatFood(updatedFood)} `,
-      errorMsg : `Unable to remove food to list`
+      errorMsg : `Unable to remove food from list`
     }
   });
 }
