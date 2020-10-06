@@ -5,7 +5,7 @@ import * as bot from './bot';
 import * as botRepo from './bot-repo';
 
 export const handle = async (event, context, callback, http = axios, token = process.env.TELEGRAM_TOKEN, repo = botRepo) => {
-  //console.log(`Received event ${JSON.stringify(event)}`);
+  //console.log(`Received event ${JSON.stringify(event)}`); touch
   const apiURL = `https://api.telegram.org/bot${token}`;
 
   if (!token) { 
