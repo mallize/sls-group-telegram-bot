@@ -22,21 +22,6 @@ export const handle = async (event, context, callback, http = axios, token = pro
   
   const chatId = `${message.chat.id}`; //convert to string
 
-  const sendMessage = (message) => {
-    const response = {
-      chat_id : chatId,
-      text : message,
-      parse_mode : 'Markdown'
-    }
-
-    return http.post(`${apiURL}/sendMessage`, response)
-      .then(() => ({ statusCode: 200, body: 'OK' }))
-      .catch((error) => {
-        console.error(`error sending message: ${JSON.stringify(response)}, \n\n${error}`);
-        return { statusCode: 200, body: 'OK' };
-      });
-  };
-
   try {
     if(isNewGroupEvent(message)) {
       message.text = `/create ${message.chat.title}`;
@@ -47,10 +32,10 @@ export const handle = async (event, context, callback, http = axios, token = pro
     }
 
     return bot.handle({chatId : chatId, command : message.text, from : `${message.from.first_name} ${message.from.last_name}`}, repo)
-      .then(response => sendMessage(response.message))
+      .then(async response => await sendMessage(chatId, response.message, apiURL, http))
       .catch((error) => {
         console.error(`error occured interacting with bot ${JSON.stringify(error)}`);
-        sendMessage(`Unsupported command. Type /help to see a list of supported commands.`);
+        sendMessage(chatId, `Unsupported command. Type /help to see a list of supported commands.`, apiURL, http);
       });
   } catch(err) {
     console.error(`an unexpected error occured ${err}`);
@@ -61,3 +46,18 @@ export const handle = async (event, context, callback, http = axios, token = pro
 const isNewGroupEvent = (message) => {
   return ((message.new_chat_member && message.new_chat_member.username === "LifeGroup_Bot") || (message.group_chat_created)) ? true : false;
 } 
+
+const sendMessage = async (chatId, message, apiURL, http = axios) => {
+  const response = {
+    chat_id : chatId,
+    text : message,
+    parse_mode : 'Markdown'
+  }
+
+  return http.post(`${apiURL}/sendMessage`, response)
+    .then(() => ({ statusCode: 200, body: 'OK' }))
+    .catch((error) => {
+      console.error(`error sending message: ${JSON.stringify(response)}, \n\n${error}`);
+      return { statusCode: 200, body: 'OK' };
+    });
+};
