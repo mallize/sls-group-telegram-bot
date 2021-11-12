@@ -10,7 +10,7 @@
     "deploy": "./node_modules/.bin/serverless deploy"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.24.0",
     "babel-runtime": "6.26.0",
     "source-map-support": "0.5.19"
   },
