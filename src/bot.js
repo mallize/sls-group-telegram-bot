@@ -157,7 +157,7 @@ const withGroup = async (chatId, repo, fn) => {
 const setGroupFields = async (chatId, repo, fields, successMsg) => {
   return repo.update({chatId : chatId, ...fields})
     .then(() => successMsg)
-    .catch(error => Promise.reject(`Error updating the study for this chatId: ${chatId}: ${JSON.stringify(error)}`));
+    .catch(error => Promise.reject(`Error updating the group fields for this chatId: ${chatId}: ${JSON.stringify(error)}`));
 }
 
 const formatPrayers = (prayers) => {

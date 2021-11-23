@@ -33,9 +33,10 @@ export const handle = async (event, context, callback, http = axios, token = pro
 
     return bot.handle({chatId : chatId, command : message.text, from : `${message.from.first_name} ${message.from.last_name}`}, repo)
       .then(async response => await sendMessage(chatId, response.message, apiURL, http))
-      .catch((error) => {
-        console.error(`error occured interacting with bot ${JSON.stringify(error)}`);
-        sendMessage(chatId, `Unsupported command. Type /help to see a list of supported commands.`, apiURL, http);
+      .catch(async (error) => {
+        console.error(`error occured interacting with bot ${JSON.stringify(error)} sending message ${JSON.stringify(message, null, 2)}`);
+        await sendMessage(chatId, `Unsupported command. Type /help to see a list of supported commands.`, apiURL, http);
+        return { statusCode: 200, body: 'Unsupported Command' };
       });
   } catch(err) {
     console.error(`an unexpected error occured ${err}`);
@@ -57,7 +58,7 @@ const sendMessage = async (chatId, message, apiURL, http = axios) => {
   return http.post(`${apiURL}/sendMessage`, response)
     .then(() => ({ statusCode: 200, body: 'OK' }))
     .catch((error) => {
-      console.error(`error sending message: ${JSON.stringify(response)}, \n\n${error}`);
+      console.error(`error sending message: ${JSON.stringify(response)}, \n\n${error}  `);
       return { statusCode: 200, body: 'OK' };
     });
 };
