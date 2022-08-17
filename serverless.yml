@@ -1,4 +1,3 @@
-org: mallize
 app: sls-group-telegram-bot
 service: sls-group-telegram-bot
 
@@ -7,7 +6,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs16.x
   environment:
     TELEGRAM_TOKEN: ${ssm:telegram-token~true} 
     GROUP_TABLE: "group-bot-groups"

@@ -175,7 +175,8 @@ describe('sending commands to bot', () => {
     it('should handle /bringFood', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/bringFood Pizza", from : 'Matt Clement'}, botTestRepo)
             .then(response => {
-                expect(response.message).toEqual("Food added. Type /food to see the full list.");
+                console.log(`response: ${JSON.stringify(response, null, 2)}`)
+                expect(response.message).toEqual("Food added. \n1 - Jenny Smith offered to bring dessert\n2 - Jill Smith offered to bring steak\n3 - Matt Clement offered to bring Pizza\n");
                 done();
             })
             .catch((error) => {
@@ -204,7 +205,8 @@ describe('sending commands to bot', () => {
 
         bot.handle({chatId : "-11111111111", command : "/bringFood Pizza", from : 'Matt Clement'}, repo)
             .then(response => {
-                expect(response.message).toEqual("Food added. Type /food to see the full list.");
+                console.log(`response: ${JSON.stringify(response, null, 2)}`)
+                expect(response.message).toEqual("Food added. \n1 - Matt Clement offered to bring Pizza\n");
                 done();
             })
             .catch((error) => {

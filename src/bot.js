@@ -10,7 +10,7 @@ export const handle = async (request, repo = botRepo) => {
         .then(msg => ({message : msg}))
         .catch(err => Promise.reject({error : err}));
     } else {
-      return {message : 'I do not support the command you sent me.'};
+      return {message : 'I do not support the command you sent me'};
     }
 }
 
@@ -97,11 +97,14 @@ const getFood = async (chatId, repo) => {
 }
 
 const bringFood = async (chatId, repo, food, from) => { 
-  return updateGroup(chatId, repo, group => ({
-    updatedFields : {food : addToList(group.food, {id : getNextId(group.food), item : food, name : from})},
-    successMsg : 'Food added. Type /food to see the full list.',
-    errorMsg : `Unable to add food to list`
-  }));
+  return updateGroup(chatId, repo, group => {
+    const newList = addToList(group.food, {id : getNextId(group.food), item : food, name : from})
+    return {
+      updatedFields : {food : newList},
+      successMsg : `Food added. \n${formatFood(newList)}`,
+      errorMsg : `Unable to add food to list`
+    }
+  });
 }
 
 const removeFood = async (chatId, repo, foodId) => { 
