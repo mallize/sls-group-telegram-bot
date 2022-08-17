@@ -68,11 +68,14 @@ const getPrayers = async (chatId, repo) => {
 }
 
 const addPrayer = async (chatId, repo, prayer, from) => { 
-  return updateGroup(chatId, repo, (group) => ({
-    updatedFields : {prayers : addToList(group.prayers, {id : getNextId(group.prayers), request : `${prayer} - requested by ${from}`})},
-    successMsg : 'Prayer added. Type /prayers to see the full list.',
-    errorMsg : 'Could not add prayer.'
-  }));
+  return updateGroup(chatId, repo, (group) => {
+    const newList = addToList(group.prayers, {id : getNextId(group.prayers), request : `${prayer} - requested by ${from}`})
+    return {
+      updatedFields : {prayers : newList},
+      successMsg : `Prayer added\n${formatPrayers(newList)}`,
+      errorMsg : 'Could not add prayer.'
+    }
+  });
 }
 
 const removePrayer = async (chatId, repo, prayerId) => { 

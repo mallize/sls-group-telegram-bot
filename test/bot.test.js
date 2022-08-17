@@ -86,9 +86,10 @@ describe('sending commands to bot', () => {
     });
 
     it('should handle /addPrayer', (done) => {  
-        bot.handle({chatId : "-11111111111", command : "/addPrayer This is a test prayer"}, botTestRepo)
+        bot.handle({chatId : "-11111111111", command : "/addPrayer This is a test prayer", from : "Matt Clement"}, botTestRepo)
             .then(response => {
-                expect(response.message).toEqual("Prayer added. Type /prayers to see the full list.");
+                console.log(`respnose: ${JSON.stringify(response, null, 2)}`)
+                expect(response.message).toEqual("Prayer added\n*Current Prayer Requests*\n1 - Jimmy Surgery\n2 - Anne Surgery\n3 - This is a test prayer - requested by Matt Clement\n");
                 done();
             })
             .catch((error) => {
@@ -97,9 +98,10 @@ describe('sending commands to bot', () => {
     });
 
     it('should handle /addPrayer with @', (done) => {  
-        bot.handle({chatId : "-11111111111", command : "/addPrayer@LifeGroup_Bot This is a test prayer"}, botTestRepo)
+        bot.handle({chatId : "-11111111111", command : "/addPrayer@LifeGroup_Bot This is a test prayer", from : "Matt Clement"}, botTestRepo)
             .then(response => {
-                expect(response.message).toEqual("Prayer added. Type /prayers to see the full list.");
+                console.log(`respnose: ${JSON.stringify(response, null, 2)}`)
+                expect(response.message).toEqual("Prayer added\n*Current Prayer Requests*\n1 - Jimmy Surgery\n2 - Anne Surgery\n3 - This is a test prayer - requested by Matt Clement\n");
                 done();
             })
             .catch((error) => {
@@ -108,9 +110,10 @@ describe('sending commands to bot', () => {
     });
 
     it('should handle /add prayer', (done) => {  
-        bot.handle({chatId : "-11111111111", command : "/add prayer This is a test prayer"}, botTestRepo)
+        bot.handle({chatId : "-11111111111", command : "/add prayer This is a test prayer", from : "Matt Clement"}, botTestRepo)
             .then(response => {
-                expect(response.message).toEqual("Prayer added. Type /prayers to see the full list.");
+                console.log(`respnose: ${JSON.stringify(response, null, 2)}`)
+                expect(response.message).toEqual("Prayer added\n*Current Prayer Requests*\n1 - Jimmy Surgery\n2 - Anne Surgery\n3 - This is a test prayer - requested by Matt Clement\n");
                 done();
             })
             .catch((error) => {
@@ -136,9 +139,10 @@ describe('sending commands to bot', () => {
             }
         }
 
-        bot.handle({chatId : "-11111111111", command : "/addPrayer This is a test prayer"}, repo, "Joe Smith")
+        bot.handle({chatId : "-11111111111", command : "/addPrayer This is a test prayer", from : "Matt Clement"}, repo, "Joe Smith")
             .then(response => {
-                expect(response.message).toEqual("Prayer added. Type /prayers to see the full list.");
+                console.log(`respnose: ${JSON.stringify(response, null, 2)}`)
+                expect(response.message).toEqual("Prayer added\n*Current Prayer Requests*\n1 - This is a test prayer - requested by Matt Clement\n");
                 done();
             })
             .catch((error) => {
