@@ -63,8 +63,38 @@ const clearStudy = async (chatId, repo) => {
   return setGroupFields(chatId, repo, {study : null}, 'Study cleared.');
 }
 
+const clearQuestions = async (chatId, repo) => { 
+  return setGroupFields(chatId, repo, {questions : null}, 'Questions cleared.');
+}
+
+const getQuestions = async (chatId, repo) => {
+  return withGroup(chatId, repo, (group) => formatQuestions(group.questions));
+}
+
 const getPrayers = async (chatId, repo) => {
   return withGroup(chatId, repo, (group) => formatPrayers(group.prayers));
+}
+
+const addQuestion = async (chatId, repo, question, from) => { 
+  return updateGroup(chatId, repo, (group) => {
+    const newList = addToList(group.questions, {id : getNextId(group.questions), question : `${question} - asked by ${from}`})
+    return {
+      updatedFields : {questions : newList},
+      successMsg : `Question added\n${formatQuestions(newList)}`,
+      errorMsg : 'Could not add question.'
+    }
+  });
+}
+
+const removeQuestion = async (chatId, repo, id) => { 
+  return updateGroup(chatId, repo, group => {
+      const newList = removeFromList(group.questions, parseInt(id, 10));
+      return {
+        updatedFields: {questions : newList}, 
+        successMsg : `Question removed\n${formatQuestions(newList)}`,
+        errorMsg : `Unable to remove question from list`
+      }
+  })
 }
 
 const addPrayer = async (chatId, repo, prayer, from) => { 
@@ -172,6 +202,12 @@ const formatPrayers = (prayers) => {
     : `*Current Prayer Requests*\n${prayers.map(prayer => `${prayer.id} - ${prayer.request}\n`).join('')}`;
 }
 
+const formatQuestions = (questions) => {
+  return isEmptyArray(questions) 
+    ?'There are currently no questions. Type /askquestion to create a questions.\nExample: /askquestion What is the Holy Spirit?'
+    : `*Current Questions*\n${questions.map(question => `${question.id} - ${question.question}\n`).join('')}`;
+}
+
 const addToList = (list, value) => (list) ? [...list, value] : [value]
 
 const removeFromList = (list, listId) => {
@@ -206,7 +242,11 @@ const commands = [
   {command : '/bringfood', fn : bringFood, description : 'offer to bring food to the next group meeting', usage : '/bringFood pizza'},
   {command : '/removefood', fn : removeFood, description : 'removes an item from the food list', usage : '/removeFood 3'},
   {command : '/clearfood', fn : clearFood, description : 'removes all items from the food list'},
-  {command : '/create', fn : create, description : 'sets up a new group'}
+  {command : '/create', fn : create, description : 'sets up a new group'},
+  {command : '/questions', fn : getQuestions, description : 'displays current questions'},
+  {command : '/addquestion', fn : addQuestion, description : 'add a question to be discussed', usage : '/addquestion What is the Holy Spirit?'},
+  {command : '/removequestion', fn : removeQuestion, description : 'removes a question from list', usage : '/removequestion 3'},
+  {command : '/clearquestions', fn : clearQuestions, description : 'removes all questions'},
 ];
 
 const getCommands = () => {

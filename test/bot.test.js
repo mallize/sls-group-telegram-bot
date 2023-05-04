@@ -60,6 +60,61 @@ describe('sending commands to bot', () => {
             });
     });
 
+
+    it('should handle /questions', (done) => {
+        const expected = '*Current Questions*\n1 - What is the Holy Spirit?\n2 - Who was John the Baptist?\n';
+
+        bot.handle({chatId : "-11111111111", command : "/questions"}, botTestRepo)
+            .then(response => {
+                expect(response.message).toEqual(expected);
+                done();
+            })
+            .catch((error) => {
+                done(`failed with ${JSON.stringify(error)}`);
+            });
+
+    });
+
+    it('should handle /clearquestions', (done) => {  
+        bot.handle({chatId : "-11111111111", command : "/clearQuestions"}, botTestRepo)
+            .then(response => {
+                expect(response.message).toEqual("Questions cleared.");
+                done();
+            })
+            .catch((error) => {
+                done(error);
+            });
+    });
+
+    it('should handle /addQuestion', (done) => {  
+        bot.handle({chatId : "-11111111111", command : "/addQuestion This is a test question?", from : "Matt Clement"}, botTestRepo)
+            .then(response => {
+                console.log(`respnose: ${JSON.stringify(response, null, 2)}`)
+                const expected = 'Question added\n*Current Questions*\n1 - What is the Holy Spirit?\n2 - Who was John the Baptist?\n3 - This is a test question? - asked by Matt Clement\n';
+                
+                expect(response.message).toEqual(expected);
+                done();
+            })
+            .catch((error) => {
+                done(error);
+            });
+    });
+
+
+    it('should handle /removeQuestion', (done) => {  
+        bot.handle({chatId : "-11111111111", command : "/removeQuestion 2"}, botTestRepo)
+            .then(response => {
+                console.log(`response = ${response.message}`);
+                expect(response.message).toMatch(/Question removed/);
+                done();
+            })
+            .catch((error) => {
+                done(error);
+            });
+    });
+
+
+
     it('should handle /prayers', (done) => {
         const expected = '*Current Prayer Requests*\n1 - Jimmy Surgery\n2 - Anne Surgery\n';
 
