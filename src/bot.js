@@ -36,7 +36,7 @@ const getNext = async (chatId, repo) => {
 const getHelp = () => Promise.resolve(generalMessage);
 
 const setStudy = async (chatId, repo, study) => { 
-  return setGroupFields(chatId, repo, {study : study}, 'Study updated. Type /next to see the group meeting time, study and notes.');
+  return setGroupFields(chatId, repo, {study : study}, 'Study updated! Type /next to see the group meeting time, study and notes.');
 }
 
 const setNotes = async (chatId, repo, notes) => { 

@@ -7,8 +7,9 @@ plugins:
 provider:
   name: aws
   runtime: nodejs16.x
+  region: "us-east-1"
   environment:
-    TELEGRAM_TOKEN: ${ssm:telegram-token~true} 
+    TELEGRAM_TOKEN: ${ssm:telegram-token} 
     GROUP_TABLE: "group-bot-groups"
   iamRoleStatements:
     - Effect: Allow
