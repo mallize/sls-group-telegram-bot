@@ -13,3 +13,7 @@
 - $npm install
 - $npm test
 - $npm run deploy
+
+
+### Node
+Currently builds with node v14.21.3

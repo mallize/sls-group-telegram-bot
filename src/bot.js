@@ -245,6 +245,7 @@ const commands = [
   {command : '/create', fn : create, description : 'sets up a new group'},
   {command : '/questions', fn : getQuestions, description : 'displays current questions'},
   {command : '/addquestion', fn : addQuestion, description : 'add a question to be discussed', usage : '/addquestion What is the Holy Spirit?'},
+  {command : '/askquestion', fn : addQuestion, description : 'add a question to be discussed', usage : '/askquestion What is the Holy Spirit?'},
   {command : '/removequestion', fn : removeQuestion, description : 'removes a question from list', usage : '/removequestion 3'},
   {command : '/clearquestions', fn : clearQuestions, description : 'removes all questions'},
 ];
