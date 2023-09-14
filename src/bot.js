@@ -2,8 +2,11 @@
 
 import * as botRepo from './bot-repo';
 
-export const handle = async (request, repo = botRepo) => {
+export const handle = async (request, repo = botRepo) => { console.table(request)
     const {commandItem, args} = findCommandItem(request.command);
+
+    console.table(commandItem)
+    console.log(`args ${args}`)
 
     if(commandItem) {
       return commandItem.fn(request.chatId, repo, args, request.from)
@@ -18,7 +21,7 @@ const findCommandItem = (req, stop = false) => {
   const request = req.replace('@LifeGroup_Bot', '')  // remove @bot
 
   const argIndex = request.indexOf(" ");
-  const command = (argIndex == -1) ? request : request.slice(0, argIndex); 
+  const command = (argIndex == -1) ? request : request.slice(0, argIndex); console.log(`command ${command}`)
   const args = (argIndex == -1) ? undefined : request.slice(argIndex + 1, request.length);
 
   const commandItem = commands.find(cmd => cmd.command === command.toLowerCase());
@@ -36,7 +39,7 @@ const getNext = async (chatId, repo) => {
 const getHelp = () => Promise.resolve(generalMessage);
 
 const setStudy = async (chatId, repo, study) => { 
-  return setGroupFields(chatId, repo, {study : study}, 'Study updated! Type /next to see the group meeting time, study and notes.');
+  return setGroupFields(chatId, repo, {study : study}, 'Study updated. Type /next to see the group meeting time, study and notes.');
 }
 
 const setNotes = async (chatId, repo, notes) => { 
@@ -221,6 +224,8 @@ const nextId = (list) => {
   return Math.max( ...ids ) + 1;
 }
 
+const sendMessage = async (chatId, repo, message, from) => message
+
 const getNextId = (list) => isEmptyArray(list) ? 1 : nextId(list);
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -248,10 +253,14 @@ const commands = [
   {command : '/askquestion', fn : addQuestion, description : 'add a question to be discussed', usage : '/askquestion What is the Holy Spirit?'},
   {command : '/removequestion', fn : removeQuestion, description : 'removes a question from list', usage : '/removequestion 3'},
   {command : '/clearquestions', fn : clearQuestions, description : 'removes all questions'},
+  {command : '/sendmessage', fn : sendMessage, description : 'sends a message to the specified channel', usage: '/sendMessage Send Wave Items', hide : true},
 ];
 
 const getCommands = () => {
-  return commands.map(cmd => ` ${cmd.command} - ${cmd.description}\n${(cmd.usage) ? '    example: ' + cmd.usage + '\n' : ''}`).join('');
+  return commands
+    .filter(cmd => cmd.hide != true )
+    .map(cmd => ` ${cmd.command} - ${cmd.description}\n${(cmd.usage) ? '    example: ' + cmd.usage + '\n' : ''}`)
+    .join('');
 }
 
 const generalMessage = `I am a bot designed to help keep track of group meetings and activities.\n\nI support the following requests:\n${getCommands()}`;

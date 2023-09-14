@@ -26,6 +26,15 @@ describe('sending commands to bot', () => {
             });
     });
 
+    it('should send a message with /sendMessage', (done) => {
+        bot.handle({chatId : "-11111111111", command : "/sendMessage test message", from : "Matt"}, botTestRepo)
+            .then(response => {
+                console.log(`response = ${response.message}`);
+                expect(response.message).toEqual('test message')        
+                done();
+            });
+    });    
+
     it('should handle /next', (done) => {
 
         const expected = `Our next meeting is ${getNextMeeting()}\n\nWe will study Chapter 2 of The Blessed Life\n\nNotes: Don't forget to bring $15 for your book!`;
