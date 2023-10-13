@@ -13,8 +13,8 @@ export const handle = async (event, context, callback, http = axios, token = pro
     return { statusCode: 200, body: 'OK' };
   }
   
-  const body = JSON.parse(event.body);    //console.log(`body = ${JSON.stringify(body)}`);
-  const message = body.message;           //console.log(`\n\n***** message: ${JSON.stringify(message)}\n\n`);
+  const body = event.detail ? event.detail : JSON.parse(event.body);    console.table(body);
+  const message = body.message;                                         console.table(message);
   if(!message) {
     console.error("bad request event");
     return { statusCode: 200, body: 'OK' };

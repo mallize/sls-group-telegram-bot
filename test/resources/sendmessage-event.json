@@ -1,0 +1,14 @@
+{
+    "detail": {
+        "message": {
+            "text": "/sendMessage Please send your items for the weekly wave!",
+            "chat": {
+                "id": "-748417483"
+            },
+            "from": {
+                "first_name": "system",
+                "last_name": "system"
+            }
+        }
+    }
+}
