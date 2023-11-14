@@ -26,6 +26,16 @@
             "question" : "Who was John the Baptist?"
         }
     ],
+    "gifts": [
+        {
+            "id" : 1,
+            "gift" : "Tshirt"
+        },
+        {
+            "id" : 2,
+            "gift" : "Jeans"
+        }
+    ],
     "food" : [
         {
             "id" : 1,

@@ -109,6 +109,20 @@ describe('sending commands to bot', () => {
             });
     });
 
+    it('should handle /addGift', (done) => {  
+        bot.handle({chatId : "-11111111111", command : "/addQuestion This is a test question?", from : "Matt Clement"}, botTestRepo)
+            .then(response => {
+                console.log(`respnose: ${JSON.stringify(response, null, 2)}`)
+                const expected = 'Question added\n*Current Questions*\n1 - What is the Holy Spirit?\n2 - Who was John the Baptist?\n3 - This is a test question? - asked by Matt Clement\n';
+                
+                expect(response.message).toEqual(expected);
+                done();
+            })
+            .catch((error) => {
+                done(error);
+            });
+    });
+
 
     it('should handle /removeQuestion', (done) => {  
         bot.handle({chatId : "-11111111111", command : "/removeQuestion 2"}, botTestRepo)

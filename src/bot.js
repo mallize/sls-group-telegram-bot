@@ -70,8 +70,16 @@ const clearQuestions = async (chatId, repo) => {
   return setGroupFields(chatId, repo, {questions : null}, 'Questions cleared.');
 }
 
+const clearGifts = async (chatId, repo) => { 
+  return setGroupFields(chatId, repo, {gifts : null}, 'Gifts cleared.');
+}
+
 const getQuestions = async (chatId, repo) => {
   return withGroup(chatId, repo, (group) => formatQuestions(group.questions));
+}
+
+const getGifts = async (chatId, repo) => {
+  return withGroup(chatId, repo, (group) => formatGifts(group.gifts));
 }
 
 const getPrayers = async (chatId, repo) => {
@@ -96,6 +104,30 @@ const removeQuestion = async (chatId, repo, id) => {
         updatedFields: {questions : newList}, 
         successMsg : `Question removed\n${formatQuestions(newList)}`,
         errorMsg : `Unable to remove question from list`
+      }
+  })
+}
+
+// TODO: just allow custom lists /add [CUSTOM LIST]
+const addGift = async (chatId, repo, gift, from) => { 
+  return updateGroup(chatId, repo, (group) => {
+    const newList = addToList(group.gifts, {id : getNextId(group.gifts), gift : `${gift} - ${from}`})
+    return {
+      updatedFields : {gifts : newList},
+      successMsg : `Gift added\n${formatGifts(newList)}`,
+      errorMsg : 'Could not add gift.'
+    }
+  });
+}
+
+// TODO: just allow custom lists /remove [CUSTOM LIST] #
+const removeGift = async (chatId, repo, id) => { 
+  return updateGroup(chatId, repo, group => {
+      const newList = removeFromList(group.gifts, parseInt(id, 10));
+      return {
+        updatedFields: {gifts : newList}, 
+        successMsg : `Gift removed\n${formatGifts(newList)}`,
+        errorMsg : `Unable to remove gift from list`
       }
   })
 }
@@ -211,6 +243,12 @@ const formatQuestions = (questions) => {
     : `*Current Questions*\n${questions.map(question => `${question.id} - ${question.question}\n`).join('')}`;
 }
 
+const formatGifts = (gifts) => {
+  return isEmptyArray(gifts) 
+    ?'There are currently no gifts. Type /addgift to add a gifts.\nExample: /addgift tshirt'
+    : `*Current Gifts*\n${gifts.map(gift => `${gift.id} - ${gift.gift}\n`).join('')}`;
+}
+
 const addToList = (list, value) => (list) ? [...list, value] : [value]
 
 const removeFromList = (list, listId) => {
@@ -253,6 +291,12 @@ const commands = [
   {command : '/askquestion', fn : addQuestion, description : 'add a question to be discussed', usage : '/askquestion What is the Holy Spirit?'},
   {command : '/removequestion', fn : removeQuestion, description : 'removes a question from list', usage : '/removequestion 3'},
   {command : '/clearquestions', fn : clearQuestions, description : 'removes all questions'},
+  {command : '/gifts', fn : getGifts, description : 'displays current questions'},
+  {command : '/addgift', fn : addGift, description : 'add a gift', usage : '/addgift jeans'},
+  {command : '/buygift', fn : addGift, description : 'add a gift', usage : '/buygift jeans'},
+  {command : '/bringgift', fn : addGift, description : 'add a gift', usage : '/bringgift jeans'},
+  {command : '/removegift', fn : removeGift, description : 'removes a gift from list', usage : '/removegift 3'},
+  {command : '/cleargifts', fn : clearGifts, description : 'removes all gifts'},
   {command : '/sendmessage', fn : sendMessage, description : 'sends a message to the specified channel', usage: '/sendMessage Send Wave Items', hide : true},
 ];
 
