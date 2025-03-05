@@ -199,6 +199,18 @@ describe('sending commands to bot', () => {
             });
     });
 
+    it('should handle /addprayer with newline to start', (done) => {  
+        bot.handle({chatId : "-11111111111", command : "/addprayer \n\n\nThis is a test prayer", from : "Matt Clement"}, botTestRepo)
+            .then(response => {
+                console.log(`respnose: ${JSON.stringify(response, null, 2)}`)
+                expect(response.message).toEqual("Prayer added\n*Current Prayer Requests*\n1 - Jimmy Surgery\n2 - Anne Surgery\n3 - This is a test prayer - requested by Matt Clement\n");
+                done();
+            })
+            .catch((error) => {
+                done(error);
+            });
+    });
+
     it('should handle /addPrayer when prayers do not exist', (done) => {  
         const repo = {
             getGroup : (chatId) => {

@@ -133,8 +133,9 @@ const removeGift = async (chatId, repo, id) => {
 }
 
 const addPrayer = async (chatId, repo, prayer, from) => { 
+  const cleanPrayer = prayer.replace(/^\n+/, '');
   return updateGroup(chatId, repo, (group) => {
-    const newList = addToList(group.prayers, {id : getNextId(group.prayers), request : `${prayer} - requested by ${from}`})
+    const newList = addToList(group.prayers, {id : getNextId(group.prayers), request : `${cleanPrayer} - requested by ${from}`})
     return {
       updatedFields : {prayers : newList},
       successMsg : `Prayer added\n${formatPrayers(newList)}`,
